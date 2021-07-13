@@ -6,7 +6,7 @@ from gspread_dataframe import get_as_dataframe, set_with_dataframe
 import re
 import datetime as dt
 import pytz as tz #timezone
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import streamlit as st
 import gspread
 import json
