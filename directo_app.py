@@ -338,50 +338,53 @@ def entidades (df_r):
   elemento_pais = '.article_body > p'
   elemento_vanguardia = '.amp-scribble-content > p'
 
-  #Realizamos un condicional para saber de qué dominio se trata la URL y extraer el elemento correspondiente a ese dominio.
-  if dominio_abc in url:
-    p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-    array = [] #creamos un array vacio.
-    for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-      array.append(p[i].text)
-    texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-  elif dominio_mundo in url:
-    p =  response.html.find(elemento_mundo) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-    array = [] #creamos un array vacio.
-    for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-      array.append(p[i].text)
-    texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-  elif dominio_pais in url:
-    p =  response.html.find(elemento_pais) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-    array = [] #creamos un array vacio.
-    for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-      array.append(p[i].text)
-    texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-  elif dominio_vanguardia in url:
-    p =  response.html.find(elemento_vanguardia) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-    array = [] #creamos un array vacio.
-    for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-      array.append(p[i].text)
-    texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-  elif dominio_voz in url:
-    p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-    array = [] #creamos un array vacio.
-    for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-      array.append(p[i].text)
-    texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-  elif dominio_hoy in url or dominio_rioja in url or dominio_correo in url or dominio_norteCastilla in url or dominio_diarioVasco in url or dominio_comercio in url or dominio_ideal in url or dominio_sur in url or dominio_provincias in url or dominio_montanes in url or dominio_verdad in url or dominio_leon in url or dominio_burgos in url:
-    p =  response.html.find(elemento_ppll) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-    array = [] #creamos un array vacio.
-    for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-      array.append(p[i].text)
-    texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable. 
-  else:
-    st.write('El dominio de la URL: ' + url + ' \nno se encuentra entre nuestros dominios objetivo o la competencia directa, y por lo tanto, no se puede extraer el texto. \nSi deseas incluir este dominio para su análisis, por favor, ponte en contacto con fvera@vocento.com')
-    texto = ''
+  
     
   with st.beta_expander('Entidades'):
     st.header('Texto de la página')
     st.write (url)
+    
+    #Realizamos un condicional para saber de qué dominio se trata la URL y extraer el elemento correspondiente a ese dominio.
+    if dominio_abc in url:
+      p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_mundo in url:
+      p =  response.html.find(elemento_mundo) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_pais in url:
+      p =  response.html.find(elemento_pais) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_vanguardia in url:
+      p =  response.html.find(elemento_vanguardia) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_voz in url:
+      p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_hoy in url or dominio_rioja in url or dominio_correo in url or dominio_norteCastilla in url or dominio_diarioVasco in url or dominio_comercio in url or dominio_ideal in url or dominio_sur in url or dominio_provincias in url or dominio_montanes in url or dominio_verdad in url or dominio_leon in url or dominio_burgos in url:
+      p =  response.html.find(elemento_ppll) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable. 
+    else:
+      st.write('El dominio de la URL: ' + url + ' \nno se encuentra entre nuestros dominios objetivo o la competencia directa, y por lo tanto, no se puede extraer el texto. \nSi deseas incluir este dominio para su análisis, por favor, ponte en contacto con fvera@vocento.com')
+      texto = ''
+    
     st.write(texto)
 
     col1, col2 = st.beta_columns(2)
