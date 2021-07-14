@@ -59,7 +59,7 @@ def envio_email(r):
   msg = MIMEMultipart()
   msg['Subject'] = 'ALERTA: "' + query_list[i] + '" ' + r
   msg['From'] = st.secrets["email_remitente"]
-  password = st.secrets["email_remitente"]
+  password = st.secrets["password_email_remitente"]
 
   html = """\
   <html>
