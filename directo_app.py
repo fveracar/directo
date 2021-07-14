@@ -384,120 +384,121 @@ def entidades (df_r):
     else:
       st.write('El dominio de la URL: ' + url + ' \nno se encuentra entre nuestros dominios objetivo o la competencia directa, y por lo tanto, no se puede extraer el texto. \nSi deseas incluir este dominio para su análisis, por favor, ponte en contacto con fvera@vocento.com')
       texto = ''
-    
-    st.write(texto)
+      
+    if text != '':    
+      st.write(texto)
 
-    col1, col2 = st.beta_columns(2)
+      col1, col2 = st.beta_columns(2)
 
-    with col1:
-      st.header('Entidades')
-      # tipos disponibles: PLAIN_TEXT, HTML
-      type_ = enums.Document.Type.PLAIN_TEXT
+      with col1:
+        st.header('Entidades')
+        # tipos disponibles: PLAIN_TEXT, HTML
+        type_ = enums.Document.Type.PLAIN_TEXT
 
-      #opcional. si no se define el idioma se detecta automáticamente
-      language = "es"
-      document = {"content": texto, "type": type_, "language": language}
+        #opcional. si no se define el idioma se detecta automáticamente
+        language = "es"
+        document = {"content": texto, "type": type_, "language": language}
 
-      # valores disponibles: NONE, UTF8, UTF16, UTF32
-      encoding_type = enums.EncodingType.UTF8
+        # valores disponibles: NONE, UTF8, UTF16, UTF32
+        encoding_type = enums.EncodingType.UTF8
 
-      response = client.analyze_entities(document, encoding_type=encoding_type)
+        response = client.analyze_entities(document, encoding_type=encoding_type)
 
-      # Bucle para recoger la entidades devueltas por la API
-      for entity in response.entities:
-          st.write(u"Entity Name: {}".format(entity.name))
+        # Bucle para recoger la entidades devueltas por la API
+        for entity in response.entities:
+            st.write(u"Entity Name: {}".format(entity.name))
 
-          # Obtenemos tipo de entidad
-          st.write(u"Entity type: {}".format(enums.Entity.Type(entity.type).name))
+            # Obtenemos tipo de entidad
+            st.write(u"Entity type: {}".format(enums.Entity.Type(entity.type).name))
 
-          # Obtenemos el salience score asociado con la entidad en un rango de [0, 1.0]
-          st.write(u"Salience score: {}".format(round(entity.salience,3)))
+            # Obtenemos el salience score asociado con la entidad en un rango de [0, 1.0]
+            st.write(u"Salience score: {}".format(round(entity.salience,3)))
 
-          # Bucle sobre cada metadata asociada con la entidad
-          for metadata_name, metadata_value in entity.metadata.items():
-              st.write(u"{}: {}".format(metadata_name, metadata_value))
+            # Bucle sobre cada metadata asociada con la entidad
+            for metadata_name, metadata_value in entity.metadata.items():
+                st.write(u"{}: {}".format(metadata_name, metadata_value))
 
 
-          # Loop over the mentions of this entity in the input document.
-          #for mention in entity.mentions:
-              #st.write(u"Mention text: {}".format(mention.text.content))
+            # Loop over the mentions of this entity in the input document.
+            #for mention in entity.mentions:
+                #st.write(u"Mention text: {}".format(mention.text.content))
 
-              # Get the mention type, e.g. PROPER for proper noun
-              #st.write(
-                  #u"Mention type: {}".format(enums.EntityMention.Type(mention.type).name)
-              #)'''
-          st.write('\n')
+                # Get the mention type, e.g. PROPER for proper noun
+                #st.write(
+                    #u"Mention type: {}".format(enums.EntityMention.Type(mention.type).name)
+                #)'''
+            st.write('\n')
 
-    with col2:
-      ####################################### Analizamos el sentimiento del texto
-      st.header('Análisis del texto')
-      document = types.Document(
-          content=texto,
-          type=enums.Document.Type.PLAIN_TEXT)
+      with col2:
+        ####################################### Analizamos el sentimiento del texto
+        st.header('Análisis del texto')
+        document = types.Document(
+            content=texto,
+            type=enums.Document.Type.PLAIN_TEXT)
 
-      # Detectamos el sentimiento del texto
-      sentiment = client.analyze_sentiment(document=document).document_sentiment
-      sscore = round(sentiment.score,4)
-      smag = round(sentiment.magnitude,4)
+        # Detectamos el sentimiento del texto
+        sentiment = client.analyze_sentiment(document=document).document_sentiment
+        sscore = round(sentiment.score,4)
+        smag = round(sentiment.magnitude,4)
 
-      if sscore < 1 and sscore < -0.5:
-        sent_label = "Muy Negativo"
-      elif sscore < 0 and sscore > -0.5:
-        sent_label = "Negativo"
-      elif sscore == 0:
-        sent_label = "Neutral"
-      elif sscore > 1 and sscore > 1.5:
-        sent_label = "Muy Positivo"
-      elif sscore > 0 and sscore < 1.5:
-        sent_label = "Positivo"
+        if sscore < 1 and sscore < -0.5:
+          sent_label = "Muy Negativo"
+        elif sscore < 0 and sscore > -0.5:
+          sent_label = "Negativo"
+        elif sscore == 0:
+          sent_label = "Neutral"
+        elif sscore > 1 and sscore > 1.5:
+          sent_label = "Muy Positivo"
+        elif sscore > 0 and sscore < 1.5:
+          sent_label = "Positivo"
 
-      st.subheader('Sentiment Score: {} es {}'.format(sscore,sent_label))
+        st.subheader('Sentiment Score: {} es {}'.format(sscore,sent_label))
 
-      predictedY =[sscore] 
-      UnlabelledY=[0,1,0]
+        predictedY =[sscore] 
+        UnlabelledY=[0,1,0]
 
-      if sscore < 0:
-          plotcolor = 'red'
-      else:
-          plotcolor = 'green'
+        if sscore < 0:
+            plotcolor = 'red'
+        else:
+            plotcolor = 'green'
 
-      plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
+        plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
 
-      plt.yticks([])
-      plt.subplots_adjust(top=0.9,bottom=0.8)
-      plt.xlim(-1,1)
-      plt.xlabel('Negativo                                                            Positivo')
-      plt.title("Tipo de Sentimiento")
-      st.set_option('deprecation.showPyplotGlobalUse', False)
-      st.pyplot(plt.show())
+        plt.yticks([])
+        plt.subplots_adjust(top=0.9,bottom=0.8)
+        plt.xlim(-1,1)
+        plt.xlabel('Negativo                                                            Positivo')
+        plt.title("Tipo de Sentimiento")
+        st.set_option('deprecation.showPyplotGlobalUse', False)
+        st.pyplot(plt.show())
 
-      # detectamos magnitud del sentimiento
-      if smag >= 0 and smag < 1:
-        sent_m_label = "Sin Emoción"
-      elif smag > 2:
-        sent_m_label = "Emoción Alta"
-      elif smag > 1 and smag < 2:
-        sent_m_label = "Emoción Baja"
+        # detectamos magnitud del sentimiento
+        if smag >= 0 and smag < 1:
+          sent_m_label = "Sin Emoción"
+        elif smag > 2:
+          sent_m_label = "Emoción Alta"
+        elif smag > 1 and smag < 2:
+          sent_m_label = "Emoción Baja"
 
-      st.subheader('Sentiment Magnitude: {} es {}'.format(smag, sent_m_label))
+        st.subheader('Sentiment Magnitude: {} es {}'.format(smag, sent_m_label))
 
-      predictedY =[smag] 
-      UnlabelledY=[0,1,0]
+        predictedY =[smag] 
+        UnlabelledY=[0,1,0]
 
-      if smag > 0 and smag < 2:
-          plotcolor = 'red'
-      else:
-          plotcolor = 'green'
+        if smag > 0 and smag < 2:
+            plotcolor = 'red'
+        else:
+            plotcolor = 'green'
 
-      plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
+        plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
 
-      plt.yticks([])
-      plt.subplots_adjust(top=0.9,bottom=0.8)
-      plt.xlim(0,5)
-      plt.xlabel('Emoción Baja                                                          Emoción Alta')
-      plt.title("Análisis Sentiment Magnitude")
-      st.set_option('deprecation.showPyplotGlobalUse', False)
-      st.pyplot(plt.show())
+        plt.yticks([])
+        plt.subplots_adjust(top=0.9,bottom=0.8)
+        plt.xlim(0,5)
+        plt.xlabel('Emoción Baja                                                          Emoción Alta')
+        plt.title("Análisis Sentiment Magnitude")
+        st.set_option('deprecation.showPyplotGlobalUse', False)
+        st.pyplot(plt.show())
 
 
 
