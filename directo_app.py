@@ -377,7 +377,8 @@ def entidades (df_r):
     texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable. 
   else:
     st.write('El dominio de la URL: ' + url + ' \nno se encuentra entre nuestros dominios objetivo o la competencia directa, y por lo tanto, no se puede extraer el texto. \nSi deseas incluir este dominio para su análisis, por favor, ponte en contacto con fvera@vocento.com')
-
+    texto = ''
+    
   with st.beta_expander('Entidades'):
     st.header('Texto de la página')
     st.write (url)
