@@ -30,7 +30,7 @@ contenido_json = {
 #convertimos el dict en un JSON
 uploaded_file = json.dumps(contenido_json)
 
-#guardamos el JSON en un archivo temporal para poder llamar al path donde se encuentra el archivo JSON en GOOGLE_APPLICATION_CREDENTIALS
+#guardamos el JSON en un archivo temporal para poder llamar al path donde se encuentra el archivo JSON
 with tempfile.NamedTemporaryFile(mode='w', delete=False) as fp:
   fp.write(uploaded_file)
 try:
@@ -285,7 +285,7 @@ def entidades (df_r):
   #convertimos el dict en un JSON
   uploaded_file = json.dumps(contenido_json)
 
-  #guardamos el JSON en un archivo temporal para poder llamar al path donde se encuentra el archivo JSON en GOOGLE_APPLICATION_CREDENTIALS
+  #guardamos el JSON en un archivo temporal para poder llamar al path donde se encuentra el archivo JSON
   with tempfile.NamedTemporaryFile(mode='w', delete=False) as fp:
     #fp.write(uploaded_file.getvalue())
     fp.write(uploaded_file)
