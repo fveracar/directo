@@ -535,7 +535,7 @@ patrones = {
     ".*burgosconecta.es.*": "Burgosconecta",
 }
 #Añadimos selectbox al sidebar para seleccionar dominio a rastrear en base a los patrones definidos
-patron_seleccionado = st.sidebar.selectbox('Dominio a monitorizar', list(patrones.items()), 0 , format_func=lambda o: o[1])
+patron_seleccionado = st.sidebar.selectbox('Dominio a monitorizar', list(patrones.items()), 1 , format_func=lambda o: o[1])
 
 #Añadimos selectbox para seleccionar qué tipos de resultados queremos monitorizar
 tipos_resultados = st.sidebar.multiselect('Tipo de resultado a monitorizar', ['Búsqueda','Carrusel noticias'] )
