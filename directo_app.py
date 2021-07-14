@@ -385,7 +385,7 @@ def entidades (df_r):
       st.write('El dominio de la URL: ' + url + ' \nno se encuentra entre nuestros dominios objetivo o la competencia directa, y por lo tanto, no se puede extraer el texto. \nSi deseas incluir este dominio para su análisis, por favor, ponte en contacto con fvera@vocento.com')
       texto = ''
       
-    if text != '':    
+    if texto != '':    
       st.write(texto)
 
       col1, col2 = st.beta_columns(2)
