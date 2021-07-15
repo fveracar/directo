@@ -12,10 +12,6 @@ import json
 import tempfile
 import os
 
-st.set_page_config(
-    page_title='Monitorización en Directo | Vocento',
-)
-
 #creamos un dict con el contenido de las credenciales de json
 contenido_json = {
   "type": st.secrets["type"],
