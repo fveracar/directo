@@ -300,204 +300,207 @@ def entidades (df_r):
   import requests
   from requests_html import HTMLSession
   
-  url = df_r.iloc[0]['Resultados']
-  try:
-      session = HTMLSession()
-      response = session.get(url)
-      
-  except requests.exceptions.RequestException as e:
-      st.write(e)
+  if df_r.empty:
+    return
+  else:  
+    url = df_r.iloc[0]['Resultados']
+    try:
+        session = HTMLSession()
+        response = session.get(url)
 
-  #dominios objetivo
-  dominio_abc = 'abc.es'
-  dominio_voz = 'lavozdigital.es'
-  dominio_hoy = 'hoy.es'
-  dominio_rioja = 'larioja.com'
-  dominio_correo = 'elcorreo.com'
-  dominio_norteCastilla = 'elnortedecastilla.es'
-  dominio_diarioVasco = 'diariovasco.com'
-  dominio_comercio = 'elcomercio.es'
-  dominio_ideal = 'ideal.es'
-  dominio_sur = 'diariosur.es'
-  dominio_provincias = 'lasprovincias.es'
-  dominio_montanes = 'eldiariomontanes.es'
-  dominio_verdad = 'laverdad.es'
-  dominio_leon = 'leonoticias.com'
-  dominio_burgos = 'burgosconecta.es'
+    except requests.exceptions.RequestException as e:
+        st.write(e)
 
-  #dominios competencia
-  dominio_mundo = 'elmundo.es'
-  dominio_pais = 'elpais.com'
-  dominio_vanguardia = 'lavanguardia.com'
+    #dominios objetivo
+    dominio_abc = 'abc.es'
+    dominio_voz = 'lavozdigital.es'
+    dominio_hoy = 'hoy.es'
+    dominio_rioja = 'larioja.com'
+    dominio_correo = 'elcorreo.com'
+    dominio_norteCastilla = 'elnortedecastilla.es'
+    dominio_diarioVasco = 'diariovasco.com'
+    dominio_comercio = 'elcomercio.es'
+    dominio_ideal = 'ideal.es'
+    dominio_sur = 'diariosur.es'
+    dominio_provincias = 'lasprovincias.es'
+    dominio_montanes = 'eldiariomontanes.es'
+    dominio_verdad = 'laverdad.es'
+    dominio_leon = 'leonoticias.com'
+    dominio_burgos = 'burgosconecta.es'
 
-  #elementos HTML para la extracción del texto de la noticia
-  elemento_abc = '.cuerpo-texto > p'
-  elemento_ppll = '.voc-paragraph'
-  elemento_mundo = '.content > p'
-  elemento_pais = '.article_body > p'
-  elemento_vanguardia = '.amp-scribble-content > p'
+    #dominios competencia
+    dominio_mundo = 'elmundo.es'
+    dominio_pais = 'elpais.com'
+    dominio_vanguardia = 'lavanguardia.com'
 
-  
-    
-  with st.beta_expander('Entidades'):
-    st.header('Texto de la página')
-    st.write (url)
-    
-    #Realizamos un condicional para saber de qué dominio se trata la URL y extraer el elemento correspondiente a ese dominio.
-    if dominio_abc in url:
-      p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-      array = [] #creamos un array vacio.
-      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-        array.append(p[i].text)
-      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-    elif dominio_mundo in url:
-      p =  response.html.find(elemento_mundo) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-      array = [] #creamos un array vacio.
-      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-        array.append(p[i].text)
-      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-    elif dominio_pais in url:
-      p =  response.html.find(elemento_pais) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-      array = [] #creamos un array vacio.
-      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-        array.append(p[i].text)
-      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-    elif dominio_vanguardia in url:
-      p =  response.html.find(elemento_vanguardia) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-      array = [] #creamos un array vacio.
-      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-        array.append(p[i].text)
-      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-    elif dominio_voz in url:
-      p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-      array = [] #creamos un array vacio.
-      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-        array.append(p[i].text)
-      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-    elif dominio_hoy in url or dominio_rioja in url or dominio_correo in url or dominio_norteCastilla in url or dominio_diarioVasco in url or dominio_comercio in url or dominio_ideal in url or dominio_sur in url or dominio_provincias in url or dominio_montanes in url or dominio_verdad in url or dominio_leon in url or dominio_burgos in url:
-      p =  response.html.find(elemento_ppll) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-      array = [] #creamos un array vacio.
-      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-        array.append(p[i].text)
-      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable. 
-    else:
-      st.write('El dominio de la URL: ' + url + ' \nno se encuentra entre nuestros dominios objetivo o la competencia directa, y por lo tanto, no se puede extraer el texto. \nSi deseas incluir este dominio para su análisis, por favor, ponte en contacto con fvera@vocento.com')
-      texto = ''
-      
-    if texto != '':    
-      st.write(texto)
-
-      col1, col2 = st.beta_columns(2)
-
-      with col1:
-        st.header('Entidades')
-        # tipos disponibles: PLAIN_TEXT, HTML
-        type_ = enums.Document.Type.PLAIN_TEXT
-
-        #opcional. si no se define el idioma se detecta automáticamente
-        language = "es"
-        document = {"content": texto, "type": type_, "language": language}
-
-        # valores disponibles: NONE, UTF8, UTF16, UTF32
-        encoding_type = enums.EncodingType.UTF8
-
-        response = client.analyze_entities(document, encoding_type=encoding_type)
-
-        # Bucle para recoger la entidades devueltas por la API
-        for entity in response.entities:
-            st.write(u"Entity Name: {}".format(entity.name))
-
-            # Obtenemos tipo de entidad
-            st.write(u"Entity type: {}".format(enums.Entity.Type(entity.type).name))
-
-            # Obtenemos el salience score asociado con la entidad en un rango de [0, 1.0]
-            st.write(u"Salience score: {}".format(round(entity.salience,3)))
-
-            # Bucle sobre cada metadata asociada con la entidad
-            for metadata_name, metadata_value in entity.metadata.items():
-                st.write(u"{}: {}".format(metadata_name, metadata_value))
+    #elementos HTML para la extracción del texto de la noticia
+    elemento_abc = '.cuerpo-texto > p'
+    elemento_ppll = '.voc-paragraph'
+    elemento_mundo = '.content > p'
+    elemento_pais = '.article_body > p'
+    elemento_vanguardia = '.amp-scribble-content > p'
 
 
-            # Loop over the mentions of this entity in the input document.
-            #for mention in entity.mentions:
-                #st.write(u"Mention text: {}".format(mention.text.content))
 
-                # Get the mention type, e.g. PROPER for proper noun
-                #st.write(
-                    #u"Mention type: {}".format(enums.EntityMention.Type(mention.type).name)
-                #)'''
-            st.write('\n')
+    with st.beta_expander('Entidades'):
+      st.header('Texto de la página')
+      st.write (url)
 
-      with col2:
-        ####################################### Analizamos el sentimiento del texto
-        st.header('Análisis del texto')
-        document = types.Document(
-            content=texto,
-            type=enums.Document.Type.PLAIN_TEXT)
+      #Realizamos un condicional para saber de qué dominio se trata la URL y extraer el elemento correspondiente a ese dominio.
+      if dominio_abc in url:
+        p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+        array = [] #creamos un array vacio.
+        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+          array.append(p[i].text)
+        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+      elif dominio_mundo in url:
+        p =  response.html.find(elemento_mundo) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+        array = [] #creamos un array vacio.
+        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+          array.append(p[i].text)
+        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+      elif dominio_pais in url:
+        p =  response.html.find(elemento_pais) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+        array = [] #creamos un array vacio.
+        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+          array.append(p[i].text)
+        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+      elif dominio_vanguardia in url:
+        p =  response.html.find(elemento_vanguardia) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+        array = [] #creamos un array vacio.
+        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+          array.append(p[i].text)
+        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+      elif dominio_voz in url:
+        p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+        array = [] #creamos un array vacio.
+        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+          array.append(p[i].text)
+        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+      elif dominio_hoy in url or dominio_rioja in url or dominio_correo in url or dominio_norteCastilla in url or dominio_diarioVasco in url or dominio_comercio in url or dominio_ideal in url or dominio_sur in url or dominio_provincias in url or dominio_montanes in url or dominio_verdad in url or dominio_leon in url or dominio_burgos in url:
+        p =  response.html.find(elemento_ppll) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+        array = [] #creamos un array vacio.
+        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+          array.append(p[i].text)
+        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable. 
+      else:
+        st.write('El dominio de la URL: ' + url + ' \nno se encuentra entre nuestros dominios objetivo o la competencia directa, y por lo tanto, no se puede extraer el texto. \nSi deseas incluir este dominio para su análisis, por favor, ponte en contacto con fvera@vocento.com')
+        texto = ''
 
-        # Detectamos el sentimiento del texto
-        sentiment = client.analyze_sentiment(document=document).document_sentiment
-        sscore = round(sentiment.score,4)
-        smag = round(sentiment.magnitude,4)
+      if texto != '':    
+        st.write(texto)
 
-        if sscore < 1 and sscore < -0.5:
-          sent_label = "Muy Negativo"
-        elif sscore < 0 and sscore > -0.5:
-          sent_label = "Negativo"
-        elif sscore == 0:
-          sent_label = "Neutral"
-        elif sscore > 1 and sscore > 1.5:
-          sent_label = "Muy Positivo"
-        elif sscore > 0 and sscore < 1.5:
-          sent_label = "Positivo"
+        col1, col2 = st.beta_columns(2)
 
-        st.subheader('Sentiment Score: {} es {}'.format(sscore,sent_label))
+        with col1:
+          st.header('Entidades')
+          # tipos disponibles: PLAIN_TEXT, HTML
+          type_ = enums.Document.Type.PLAIN_TEXT
 
-        predictedY =[sscore] 
-        UnlabelledY=[0,1,0]
+          #opcional. si no se define el idioma se detecta automáticamente
+          language = "es"
+          document = {"content": texto, "type": type_, "language": language}
 
-        if sscore < 0:
-            plotcolor = 'red'
-        else:
-            plotcolor = 'green'
+          # valores disponibles: NONE, UTF8, UTF16, UTF32
+          encoding_type = enums.EncodingType.UTF8
 
-        plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
+          response = client.analyze_entities(document, encoding_type=encoding_type)
 
-        plt.yticks([])
-        plt.subplots_adjust(top=0.9,bottom=0.8)
-        plt.xlim(-1,1)
-        plt.xlabel('Negativo                                                            Positivo')
-        plt.title("Tipo de Sentimiento")
-        st.set_option('deprecation.showPyplotGlobalUse', False)
-        st.pyplot(plt.show())
+          # Bucle para recoger la entidades devueltas por la API
+          for entity in response.entities:
+              st.write(u"Entity Name: {}".format(entity.name))
 
-        # detectamos magnitud del sentimiento
-        if smag >= 0 and smag < 1:
-          sent_m_label = "Sin Emoción"
-        elif smag > 2:
-          sent_m_label = "Emoción Alta"
-        elif smag > 1 and smag < 2:
-          sent_m_label = "Emoción Baja"
+              # Obtenemos tipo de entidad
+              st.write(u"Entity type: {}".format(enums.Entity.Type(entity.type).name))
 
-        st.subheader('Sentiment Magnitude: {} es {}'.format(smag, sent_m_label))
+              # Obtenemos el salience score asociado con la entidad en un rango de [0, 1.0]
+              st.write(u"Salience score: {}".format(round(entity.salience,3)))
 
-        predictedY =[smag] 
-        UnlabelledY=[0,1,0]
+              # Bucle sobre cada metadata asociada con la entidad
+              for metadata_name, metadata_value in entity.metadata.items():
+                  st.write(u"{}: {}".format(metadata_name, metadata_value))
 
-        if smag > 0 and smag < 2:
-            plotcolor = 'red'
-        else:
-            plotcolor = 'green'
 
-        plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
+              # Loop over the mentions of this entity in the input document.
+              #for mention in entity.mentions:
+                  #st.write(u"Mention text: {}".format(mention.text.content))
 
-        plt.yticks([])
-        plt.subplots_adjust(top=0.9,bottom=0.8)
-        plt.xlim(0,5)
-        plt.xlabel('Emoción Baja                                                          Emoción Alta')
-        plt.title("Análisis Sentiment Magnitude")
-        st.set_option('deprecation.showPyplotGlobalUse', False)
-        st.pyplot(plt.show())
+                  # Get the mention type, e.g. PROPER for proper noun
+                  #st.write(
+                      #u"Mention type: {}".format(enums.EntityMention.Type(mention.type).name)
+                  #)'''
+              st.write('\n')
+
+        with col2:
+          ####################################### Analizamos el sentimiento del texto
+          st.header('Análisis del texto')
+          document = types.Document(
+              content=texto,
+              type=enums.Document.Type.PLAIN_TEXT)
+
+          # Detectamos el sentimiento del texto
+          sentiment = client.analyze_sentiment(document=document).document_sentiment
+          sscore = round(sentiment.score,4)
+          smag = round(sentiment.magnitude,4)
+
+          if sscore < 1 and sscore < -0.5:
+            sent_label = "Muy Negativo"
+          elif sscore < 0 and sscore > -0.5:
+            sent_label = "Negativo"
+          elif sscore == 0:
+            sent_label = "Neutral"
+          elif sscore > 1 and sscore > 1.5:
+            sent_label = "Muy Positivo"
+          elif sscore > 0 and sscore < 1.5:
+            sent_label = "Positivo"
+
+          st.subheader('Sentiment Score: {} es {}'.format(sscore,sent_label))
+
+          predictedY =[sscore] 
+          UnlabelledY=[0,1,0]
+
+          if sscore < 0:
+              plotcolor = 'red'
+          else:
+              plotcolor = 'green'
+
+          plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
+
+          plt.yticks([])
+          plt.subplots_adjust(top=0.9,bottom=0.8)
+          plt.xlim(-1,1)
+          plt.xlabel('Negativo                                                            Positivo')
+          plt.title("Tipo de Sentimiento")
+          st.set_option('deprecation.showPyplotGlobalUse', False)
+          st.pyplot(plt.show())
+
+          # detectamos magnitud del sentimiento
+          if smag >= 0 and smag < 1:
+            sent_m_label = "Sin Emoción"
+          elif smag > 2:
+            sent_m_label = "Emoción Alta"
+          elif smag > 1 and smag < 2:
+            sent_m_label = "Emoción Baja"
+
+          st.subheader('Sentiment Magnitude: {} es {}'.format(smag, sent_m_label))
+
+          predictedY =[smag] 
+          UnlabelledY=[0,1,0]
+
+          if smag > 0 and smag < 2:
+              plotcolor = 'red'
+          else:
+              plotcolor = 'green'
+
+          plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
+
+          plt.yticks([])
+          plt.subplots_adjust(top=0.9,bottom=0.8)
+          plt.xlim(0,5)
+          plt.xlabel('Emoción Baja                                                          Emoción Alta')
+          plt.title("Análisis Sentiment Magnitude")
+          st.set_option('deprecation.showPyplotGlobalUse', False)
+          st.pyplot(plt.show())
 
 
 
