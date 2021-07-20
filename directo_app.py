@@ -479,7 +479,7 @@ def entidades (df_r):
             sent_m_label = "Sin Emoción"
           elif smag > 2:
             sent_m_label = "Emoción Alta"
-          elif smag > 1 and smag < 2:
+          elif smag >= 1 and smag <= 2:
             sent_m_label = "Emoción Baja"
 
           st.subheader('Sentiment Magnitude: {} es {}'.format(smag, sent_m_label))
