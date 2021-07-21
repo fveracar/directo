@@ -643,7 +643,7 @@ with st.sidebar.form(key='my_form'):
   #añadimos a la barra lateral de la página de streamlit un text area para introducir las búsquedas a monitorizar
   busquedas = st.text_area('Introduce las búsquedas a monitorizar (una por línea)', height=100)
   query_list = busquedas.split("\n")
-  submit_button = st.form_submit_button(label='Iniciar')
+  #submit_button = st.form_submit_button(label='Iniciar')
 
 #Si el campo de tipo de resultado está vacío paramos el script y mostramos un mensaje de advertencia
 if tipos_resultados == []:
