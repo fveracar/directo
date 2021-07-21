@@ -637,10 +637,10 @@ with st.sidebar.form(key='my_form'):
   busquedas = st.text_area('Introduce las búsquedas a monitorizar (una por línea)', height=100)
   query_list = busquedas.split("\n")
   
-  #creamos el botón para borrar el histórico seleccionado en el selectbox e incluimos el código a ejecutar si el botón es pulsado
-  historicos = st.selectbox("Históricos", lista_titulos_wk[1:], index=0) 
+#creamos el botón para borrar el histórico seleccionado en el selectbox e incluimos el código a ejecutar si el botón es pulsado
+historicos = st.sidebar.selectbox("Históricos", lista_titulos_wk[1:], index=0) 
 
-if st.button('borrar histórico'):
+if st.sidebar.button('borrar histórico'):
   wk_del_historico = ss.worksheet(historicos) #definimos la hoja a borrar
   ss.del_worksheet(wk_del_historico) #borramos la hoja
   st.write(wk_del_historico.title + ' borrado correctamente') #ponemos mensaje de confirmación
