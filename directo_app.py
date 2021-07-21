@@ -632,18 +632,21 @@ with st.sidebar.form(key='my_form'):
   
   submit_button = st.form_submit_button(label='Iniciar')
   #añadimos al sidebar el selectbox para seleccionar históricos menos la hoja 1
-  historicos = st.selectbox("Históricos", lista_titulos_wk[1:], index=0) 
-  
-  #creamos el botón para borrar el histórico seleccionado en el selectbox e incluimos el código a ejecutar si el botón es pulsado
-  if st.button('borrar histórico'):
-    wk_del_historico = ss.worksheet(historicos) #definimos la hoja a borrar
-    ss.del_worksheet(wk_del_historico) #borramos la hoja
-    st.write(wk_del_historico.title + ' borrado correctamente') #ponemos mensaje de confirmación
-    st.experimental_rerun()
   
   #añadimos a la barra lateral de la página de streamlit un text area para introducir las búsquedas a monitorizar
   busquedas = st.text_area('Introduce las búsquedas a monitorizar (una por línea)', height=100)
   query_list = busquedas.split("\n")
+  
+  #creamos el botón para borrar el histórico seleccionado en el selectbox e incluimos el código a ejecutar si el botón es pulsado
+  historicos = st.selectbox("Históricos", lista_titulos_wk[1:], index=0) 
+
+if st.button('borrar histórico'):
+  wk_del_historico = ss.worksheet(historicos) #definimos la hoja a borrar
+  ss.del_worksheet(wk_del_historico) #borramos la hoja
+  st.write(wk_del_historico.title + ' borrado correctamente') #ponemos mensaje de confirmación
+  st.experimental_rerun()
+  
+  
   
 
 #Si el campo de tipo de resultado está vacío paramos el script y mostramos un mensaje de advertencia
