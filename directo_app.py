@@ -521,7 +521,7 @@ st.title('Monitorización en Directo')
 
 with st.sidebar.form(key='my_form'):
   #input email donde recibir las alertas
-  email_destinatario= st.sidebar.text_input('Email para recibir alertas')
+  email_destinatario= st.text_input('Email para recibir alertas')
 
   #Definimos patrones para rastrear diferentes dominios
   patrones = {
@@ -543,16 +543,16 @@ with st.sidebar.form(key='my_form'):
       ".*burgosconecta.es.*": "Burgosconecta",
   }
   #Añadimos selectbox al sidebar para seleccionar dominio a rastrear en base a los patrones definidos
-  patron_seleccionado = st.sidebar.selectbox('Dominio a monitorizar', list(patrones.items()), 1 , format_func=lambda o: o[1])
+  patron_seleccionado = st.selectbox('Dominio a monitorizar', list(patrones.items()), 1 , format_func=lambda o: o[1])
 
   #Añadimos selectbox para seleccionar qué tipos de resultados queremos monitorizar
-  tipos_resultados = st.sidebar.multiselect('Tipo de resultado a monitorizar', ['Búsqueda','Carrusel noticias'] )
+  tipos_resultados = st.multiselect('Tipo de resultado a monitorizar', ['Búsqueda','Carrusel noticias'] )
 
   #Añadimos selectbox al sidebar para seleccionar que resultados queremos en función del tipo de dispositivo 
-  dispositivo = st.sidebar.multiselect('Dispositivo', ['Móvil', 'Desktop'])
+  dispositivo = st.multiselect('Dispositivo', ['Móvil', 'Desktop'])
 
   #añadimos a la barra lateral un selectbox para elegir el número de posiciones que queremos rastrear top10, top20, top30
-  add_selectbox_top = st.sidebar.selectbox(
+  add_selectbox_top = st.selectbox(
       "¿Cuantas posiciones de los resultados quieres monitorizar?",
       ('10','20','30')
       )
@@ -612,7 +612,7 @@ with st.sidebar.form(key='my_form'):
       "w+CAIQICIhUHJvdmluY2Ugb2YgWmFyYWdvemEsQXJhZ29uLFNwYWlu": "Zaragoza",
   }
   #añadimos selectbox al sidebar para seleccionar la ubicación donde queremos realizar la búsqueda
-  uule = st.sidebar.multiselect('Ubicación de la búsqueda', list(uules.items()), format_func=lambda o: o[1])
+  uule = st.multiselect('Ubicación de la búsqueda', list(uules.items()), format_func=lambda o: o[1])
 
   #Definimos los datos para el selectbox de frecuencia de rastreo
   import random
@@ -622,7 +622,7 @@ with st.sidebar.form(key='my_form'):
       random.randrange(30*60,45*60): "Cada 30-45 minutos",  
   }
   #añadimos al sidebar el selectbox las frecuencia de rastreo definidas
-  frecuencia = st.sidebar.selectbox('Frecuencia de rastreo', list(frecuencias.items()), 0 , format_func=lambda o: o[1])
+  frecuencia = st.selectbox('Frecuencia de rastreo', list(frecuencias.items()), 0 , format_func=lambda o: o[1])
 
   #abrimos la spreadsheet donde se almacenan los resultados de búsqueda y los históricos
   ss = gc.open_by_url(st.secrets["sheet"])
@@ -631,17 +631,17 @@ with st.sidebar.form(key='my_form'):
   lista_titulos_wk = [worksheet.title for worksheet in lista_wk] #creamos una lista con todos los títulos de cada hoja dentro de la spreadsheet, ya que la anterior lista contiene más datos además del título.
 
   #añadimos al sidebar el selectbox para seleccionar históricos menos la hoja 1
-  historicos = st.sidebar.selectbox("Históricos", lista_titulos_wk[1:], index=0) 
+  historicos = st.selectbox("Históricos", lista_titulos_wk[1:], index=0) 
 
   #creamos el botón para borrar el histórico seleccionado en el selectbox e incluimos el código a ejecutar si el botón es pulsado
-  if st.sidebar.button('borrar histórico'):
+  if st.button('borrar histórico'):
     wk_del_historico = ss.worksheet(historicos) #definimos la hoja a borrar
     ss.del_worksheet(wk_del_historico) #borramos la hoja
     st.write(wk_del_historico.title + ' borrado correctamente') #ponemos mensaje de confirmación
     st.experimental_rerun()
 
   #añadimos a la barra lateral de la página de streamlit un text area para introducir las búsquedas a monitorizar
-  busquedas = st.sidebar.text_area('Introduce las búsquedas a monitorizar (una por línea)', height=100)
+  busquedas = st.text_area('Introduce las búsquedas a monitorizar (una por línea)', height=100)
   query_list = busquedas.split("\n")
   submit_button = st.form_submit_button(label='Iniciar')
 
