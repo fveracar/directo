@@ -519,129 +519,131 @@ st.set_page_config(
 #añadimos un título a la página de streamlit
 st.title('Monitorización en Directo')
 
-#input email donde recibir las alertas
-email_destinatario= st.sidebar.text_input('Email para recibir alertas')
+with st.form(key='my_form'):
+  #input email donde recibir las alertas
+  email_destinatario= st.sidebar.text_input('Email para recibir alertas')
 
-#Definimos patrones para rastrear diferentes dominios
-patrones = {
-    ".*abc.es.*": "ABC",
-    ".*sevilla.abc.es.*": "ABC Sevilla",
-    ".*lavozdigital.es.*" : "La Voz Digital",
-    ".*elcorreo.com.*": "El Correo",
-    ".*hoy.es.*": "HOY",
-    ".*larioja.com.*": "La Rioja",
-    ".*elnortedecastilla.es.*": "El Norte de Castilla",
-    ".*diariovasco.com.*": "El Diario Vasco",
-    ".*ideal.es.*": "IDEAL",
-    ".*diariosur.es.*": "SUR",
-    ".*elcomercio.es.*": "El Comercio",
-    ".*lasprovincias.es.*": "Las Provincias",
-    ".*eldiariomontanes.es.*": "El Diario Montañés",      
-    ".*laverdad.es.*": "La Verdad",
-    ".*leonoticias.com.*": "Leonoticias",
-    ".*burgosconecta.es.*": "Burgosconecta",
-}
-#Añadimos selectbox al sidebar para seleccionar dominio a rastrear en base a los patrones definidos
-patron_seleccionado = st.sidebar.selectbox('Dominio a monitorizar', list(patrones.items()), 1 , format_func=lambda o: o[1])
+  #Definimos patrones para rastrear diferentes dominios
+  patrones = {
+      ".*abc.es.*": "ABC",
+      ".*sevilla.abc.es.*": "ABC Sevilla",
+      ".*lavozdigital.es.*" : "La Voz Digital",
+      ".*elcorreo.com.*": "El Correo",
+      ".*hoy.es.*": "HOY",
+      ".*larioja.com.*": "La Rioja",
+      ".*elnortedecastilla.es.*": "El Norte de Castilla",
+      ".*diariovasco.com.*": "El Diario Vasco",
+      ".*ideal.es.*": "IDEAL",
+      ".*diariosur.es.*": "SUR",
+      ".*elcomercio.es.*": "El Comercio",
+      ".*lasprovincias.es.*": "Las Provincias",
+      ".*eldiariomontanes.es.*": "El Diario Montañés",      
+      ".*laverdad.es.*": "La Verdad",
+      ".*leonoticias.com.*": "Leonoticias",
+      ".*burgosconecta.es.*": "Burgosconecta",
+  }
+  #Añadimos selectbox al sidebar para seleccionar dominio a rastrear en base a los patrones definidos
+  patron_seleccionado = st.sidebar.selectbox('Dominio a monitorizar', list(patrones.items()), 1 , format_func=lambda o: o[1])
 
-#Añadimos selectbox para seleccionar qué tipos de resultados queremos monitorizar
-tipos_resultados = st.sidebar.multiselect('Tipo de resultado a monitorizar', ['Búsqueda','Carrusel noticias'] )
+  #Añadimos selectbox para seleccionar qué tipos de resultados queremos monitorizar
+  tipos_resultados = st.sidebar.multiselect('Tipo de resultado a monitorizar', ['Búsqueda','Carrusel noticias'] )
 
-#Añadimos selectbox al sidebar para seleccionar que resultados queremos en función del tipo de dispositivo 
-dispositivo = st.sidebar.multiselect('Dispositivo', ['Móvil', 'Desktop'])
+  #Añadimos selectbox al sidebar para seleccionar que resultados queremos en función del tipo de dispositivo 
+  dispositivo = st.sidebar.multiselect('Dispositivo', ['Móvil', 'Desktop'])
 
-#añadimos a la barra lateral un selectbox para elegir el número de posiciones que queremos rastrear top10, top20, top30
-add_selectbox_top = st.sidebar.selectbox(
-    "¿Cuantas posiciones de los resultados quieres monitorizar?",
-    ('10','20','30')
-    )
+  #añadimos a la barra lateral un selectbox para elegir el número de posiciones que queremos rastrear top10, top20, top30
+  add_selectbox_top = st.sidebar.selectbox(
+      "¿Cuantas posiciones de los resultados quieres monitorizar?",
+      ('10','20','30')
+      )
 
-#Definimos una serie de ubicaciones para localizar la búsqueda
-uules = {
-    "w+CAIQICIFU3BhaW4=": "España",
-    "w+CAIQICIiUHJvdmluY2Ugb2YgQSBDb3J1bmEsR2FsaWNpYSxTcGFpbg==": "A Coruna",
-    "w+CAIQICImUHJvdmluY2Ugb2YgQWxhdmEsQmFzcXVlIENvdW50cnksU3BhaW4=": "Álava",
-    "w+CAIQICIsUHJvdmluY2Ugb2YgQWxiYWNldGUsQ2FzdGlsZS1MYSBNYW5jaGEsU3BhaW4=": "Albacete",
-    "w+CAIQICIjUHJvdmluY2Ugb2YgQWxpY2FudGUsVmFsZW5jaWEsU3BhaW4=": "Alicante",
-    "w+CAIQICIjUHJvdmluY2Ugb2YgQWxtZXJpYSxBbmRhbHVzaWEsU3BhaW4=": "Almería",
-    "w+CAIQICIjUHJvdmluY2Ugb2YgQXN0dXJpYXMsQXN0dXJpYXMsU3BhaW4=": "Asturias",
-    "w+CAIQICIoUHJvdmluY2Ugb2YgQXZpbGEsQ2FzdGlsZSBhbmQgTGVvbixTcGFpbg==": "Ávila",
-    "w+CAIQICIlUHJvdmluY2Ugb2YgQmFkYWpveixFeHRyZW1hZHVyYSxTcGFpbg==": "Badajoz",
-    "w+CAIQICIzUHJvdmluY2Ugb2YgQmFsZWFyaWMgSXNsYW5kcyxCYWxlYXJpYyBJc2xhbmRzLFNwYWlu": "Islas Baleares",
-    "w+CAIQICIlUHJvdmluY2Ugb2YgQmFyY2Vsb25hLENhdGFsb25pYSxTcGFpbg==": "Barcelona",
-    "w+CAIQICInUHJvdmluY2Ugb2YgQmlzY2F5LEJhc3F1ZSBDb3VudHJ5LFNwYWlu": "Vizcaya",
-    "w+CAIQICIpUHJvdmluY2Ugb2YgQnVyZ29zLENhc3RpbGUgYW5kIExlb24sU3BhaW4=": "Burgos",
-    "w+CAIQICIlUHJvdmluY2Ugb2YgQ2FjZXJlcyxFeHRyZW1hZHVyYSxTcGFpbg==": "Cáceres",
-    "w+CAIQICIhUHJvdmluY2Ugb2YgQ2FkaXosQW5kYWx1c2lhLFNwYWlu": "Cádiz",
-    "w+CAIQICIlUHJvdmluY2Ugb2YgQ2FudGFicmlhLENhbnRhYnJpYSxTcGFpbg==": "Cantabria",
-    "w+CAIQICIkUHJvdmluY2Ugb2YgQ2FzdGVsbG9uLFZhbGVuY2lhLFNwYWlu": "Castellón",
-    "w+CAIQICIvUHJvdmluY2Ugb2YgQ2l1ZGFkIFJlYWwsQ2FzdGlsZS1MYSBNYW5jaGEsU3BhaW4=": "Ciudad Real",
-    "w+CAIQICIjUHJvdmluY2Ugb2YgQ29yZG9iYSxBbmRhbHVzaWEsU3BhaW4=": "Córdoba",
-    "w+CAIQICIqUHJvdmluY2Ugb2YgQ3VlbmNhLENhc3RpbGUtTGEgTWFuY2hhLFNwYWlu": "Cuenca",
-    "w+CAIQICIpUHJvdmluY2Ugb2YgR2lwdXprb2EsQmFzcXVlIENvdW50cnksU3BhaW4=": "Gipuzkoa",
-    "w+CAIQICIjUHJvdmluY2Ugb2YgR3JhbmFkYSxBbmRhbHVzaWEsU3BhaW4=": "Granada",
-    "w+CAIQICIvUHJvdmluY2Ugb2YgR3VhZGFsYWphcmEsQ2FzdGlsZS1MYSBNYW5jaGEsU3BhaW4=": "Guadalajara",
-    "w+CAIQICIiUHJvdmluY2Ugb2YgSHVlbHZhLEFuZGFsdXNpYSxTcGFpbg==": "Huelva",
-    "w+CAIQICIfUHJvdmluY2Ugb2YgSHVlc2NhLEFyYWdvbixTcGFpbg==": "Huesca",
-    "w+CAIQICIgUHJvdmluY2Ugb2YgSmFlbixBbmRhbHVzaWEsU3BhaW4=": "Jaén",
-    "w+CAIQICIjUHJvdmluY2Ugb2YgTGEgUmlvamEsTGEgUmlvamEsU3BhaW4=": "La Rioja",
-    "w+CAIQICIrUHJvdmluY2Ugb2YgTGFzIFBhbG1hcyxDYW5hcnkgSXNsYW5kcyxTcGFpbg==": "Las Palmas",
-    "w+CAIQICInUHJvdmluY2Ugb2YgTGVvbixDYXN0aWxlIGFuZCBMZW9uLFNwYWlu": "León",
-    "w+CAIQICIiUHJvdmluY2Ugb2YgTGxlaWRhLENhdGFsb25pYSxTcGFpbg==": "Lleida",
-    "w+CAIQICIeUHJvdmluY2Ugb2YgTHVnbyxHYWxpY2lhLFNwYWlu": "Lugo",
-    "w+CAIQICIfUHJvdmluY2Ugb2YgTWFkcmlkLE1hZHJpZCxTcGFpbg==": "Madrid",
-    "w+CAIQICIiUHJvdmluY2Ugb2YgTWFsYWdhLEFuZGFsdXNpYSxTcGFpbg==": "Málaga",
-    "w+CAIQICIfUHJvdmluY2Ugb2YgTXVyY2lhLE11cmNpYSxTcGFpbg==": "Murcia",
-    "w+CAIQICIhUHJvdmluY2Ugb2YgTmF2YXJyZSxOYXZhcnJlLFNwYWlu": "Navarra",
-    "w+CAIQICIrUHJvdmluY2Ugb2YgUGFsZW5jaWEsQ2FzdGlsZSBhbmQgTGVvbixTcGFpbg==": "Palencia",
-    "w+CAIQICIkUHJvdmluY2Ugb2YgUG9udGV2ZWRyYSxHYWxpY2lhLFNwYWlu": "Pontevedra",
-    "w+CAIQICIiUHJvdmluY2Ugb2YgR2lyb25hLENhdGFsb25pYSxTcGFpbg==": "Girona",
-    "w+CAIQICIhUHJvdmluY2Ugb2YgT3VyZW5zZSxHYWxpY2lhLFNwYWlu": "Orense",
-    "w+CAIQICIsUHJvdmluY2Ugb2YgU2FsYW1hbmNhLENhc3RpbGUgYW5kIExlb24sU3BhaW4=": "Salamanca",
-    "w+CAIQICI3UHJvdmluY2Ugb2YgU2FudGEgQ3J1eiBkZSBUZW5lcmlmZSxDYW5hcnkgSXNsYW5kcyxTcGFpbg==": "Santa Cruz de Tenerife",
-    "w+CAIQICIqUHJvdmluY2Ugb2YgU2Vnb3ZpYSxDYXN0aWxlIGFuZCBMZW9uLFNwYWlu": "Segovia",
-    "w+CAIQICIjUHJvdmluY2Ugb2YgU2V2aWxsYSxBbmRhbHVzaWEsU3BhaW4=": "Sevilla",
-    "w+CAIQICIoUHJvdmluY2Ugb2YgU29yaWEsQ2FzdGlsZSBhbmQgTGVvbixTcGFpbg==": "Soria",
-    "w+CAIQICIlUHJvdmluY2Ugb2YgVGFycmFnb25hLENhdGFsb25pYSxTcGFpbg==": "Tarragona",
-    "w+CAIQICIfUHJvdmluY2Ugb2YgVGVydWVsLEFyYWdvbixTcGFpbg==": "Teruel",
-    "w+CAIQICIqUHJvdmluY2Ugb2YgVG9sZWRvLENhc3RpbGUtTGEgTWFuY2hhLFNwYWlu": "Toledo",
-    "w+CAIQICIjUHJvdmluY2Ugb2YgVmFsZW5jaWEsVmFsZW5jaWEsU3BhaW4=": "Valencia",
-    "w+CAIQICItUHJvdmluY2Ugb2YgVmFsbGFkb2xpZCxDYXN0aWxlIGFuZCBMZW9uLFNwYWlu": "Valladolid",
-    "w+CAIQICIpUHJvdmluY2Ugb2YgWmFtb3JhLENhc3RpbGUgYW5kIExlb24sU3BhaW4=": "Zamora",
-    "w+CAIQICIhUHJvdmluY2Ugb2YgWmFyYWdvemEsQXJhZ29uLFNwYWlu": "Zaragoza",
-}
-#añadimos selectbox al sidebar para seleccionar la ubicación donde queremos realizar la búsqueda
-uule = st.sidebar.multiselect('Ubicación de la búsqueda', list(uules.items()), format_func=lambda o: o[1])
+  #Definimos una serie de ubicaciones para localizar la búsqueda
+  uules = {
+      "w+CAIQICIFU3BhaW4=": "España",
+      "w+CAIQICIiUHJvdmluY2Ugb2YgQSBDb3J1bmEsR2FsaWNpYSxTcGFpbg==": "A Coruna",
+      "w+CAIQICImUHJvdmluY2Ugb2YgQWxhdmEsQmFzcXVlIENvdW50cnksU3BhaW4=": "Álava",
+      "w+CAIQICIsUHJvdmluY2Ugb2YgQWxiYWNldGUsQ2FzdGlsZS1MYSBNYW5jaGEsU3BhaW4=": "Albacete",
+      "w+CAIQICIjUHJvdmluY2Ugb2YgQWxpY2FudGUsVmFsZW5jaWEsU3BhaW4=": "Alicante",
+      "w+CAIQICIjUHJvdmluY2Ugb2YgQWxtZXJpYSxBbmRhbHVzaWEsU3BhaW4=": "Almería",
+      "w+CAIQICIjUHJvdmluY2Ugb2YgQXN0dXJpYXMsQXN0dXJpYXMsU3BhaW4=": "Asturias",
+      "w+CAIQICIoUHJvdmluY2Ugb2YgQXZpbGEsQ2FzdGlsZSBhbmQgTGVvbixTcGFpbg==": "Ávila",
+      "w+CAIQICIlUHJvdmluY2Ugb2YgQmFkYWpveixFeHRyZW1hZHVyYSxTcGFpbg==": "Badajoz",
+      "w+CAIQICIzUHJvdmluY2Ugb2YgQmFsZWFyaWMgSXNsYW5kcyxCYWxlYXJpYyBJc2xhbmRzLFNwYWlu": "Islas Baleares",
+      "w+CAIQICIlUHJvdmluY2Ugb2YgQmFyY2Vsb25hLENhdGFsb25pYSxTcGFpbg==": "Barcelona",
+      "w+CAIQICInUHJvdmluY2Ugb2YgQmlzY2F5LEJhc3F1ZSBDb3VudHJ5LFNwYWlu": "Vizcaya",
+      "w+CAIQICIpUHJvdmluY2Ugb2YgQnVyZ29zLENhc3RpbGUgYW5kIExlb24sU3BhaW4=": "Burgos",
+      "w+CAIQICIlUHJvdmluY2Ugb2YgQ2FjZXJlcyxFeHRyZW1hZHVyYSxTcGFpbg==": "Cáceres",
+      "w+CAIQICIhUHJvdmluY2Ugb2YgQ2FkaXosQW5kYWx1c2lhLFNwYWlu": "Cádiz",
+      "w+CAIQICIlUHJvdmluY2Ugb2YgQ2FudGFicmlhLENhbnRhYnJpYSxTcGFpbg==": "Cantabria",
+      "w+CAIQICIkUHJvdmluY2Ugb2YgQ2FzdGVsbG9uLFZhbGVuY2lhLFNwYWlu": "Castellón",
+      "w+CAIQICIvUHJvdmluY2Ugb2YgQ2l1ZGFkIFJlYWwsQ2FzdGlsZS1MYSBNYW5jaGEsU3BhaW4=": "Ciudad Real",
+      "w+CAIQICIjUHJvdmluY2Ugb2YgQ29yZG9iYSxBbmRhbHVzaWEsU3BhaW4=": "Córdoba",
+      "w+CAIQICIqUHJvdmluY2Ugb2YgQ3VlbmNhLENhc3RpbGUtTGEgTWFuY2hhLFNwYWlu": "Cuenca",
+      "w+CAIQICIpUHJvdmluY2Ugb2YgR2lwdXprb2EsQmFzcXVlIENvdW50cnksU3BhaW4=": "Gipuzkoa",
+      "w+CAIQICIjUHJvdmluY2Ugb2YgR3JhbmFkYSxBbmRhbHVzaWEsU3BhaW4=": "Granada",
+      "w+CAIQICIvUHJvdmluY2Ugb2YgR3VhZGFsYWphcmEsQ2FzdGlsZS1MYSBNYW5jaGEsU3BhaW4=": "Guadalajara",
+      "w+CAIQICIiUHJvdmluY2Ugb2YgSHVlbHZhLEFuZGFsdXNpYSxTcGFpbg==": "Huelva",
+      "w+CAIQICIfUHJvdmluY2Ugb2YgSHVlc2NhLEFyYWdvbixTcGFpbg==": "Huesca",
+      "w+CAIQICIgUHJvdmluY2Ugb2YgSmFlbixBbmRhbHVzaWEsU3BhaW4=": "Jaén",
+      "w+CAIQICIjUHJvdmluY2Ugb2YgTGEgUmlvamEsTGEgUmlvamEsU3BhaW4=": "La Rioja",
+      "w+CAIQICIrUHJvdmluY2Ugb2YgTGFzIFBhbG1hcyxDYW5hcnkgSXNsYW5kcyxTcGFpbg==": "Las Palmas",
+      "w+CAIQICInUHJvdmluY2Ugb2YgTGVvbixDYXN0aWxlIGFuZCBMZW9uLFNwYWlu": "León",
+      "w+CAIQICIiUHJvdmluY2Ugb2YgTGxlaWRhLENhdGFsb25pYSxTcGFpbg==": "Lleida",
+      "w+CAIQICIeUHJvdmluY2Ugb2YgTHVnbyxHYWxpY2lhLFNwYWlu": "Lugo",
+      "w+CAIQICIfUHJvdmluY2Ugb2YgTWFkcmlkLE1hZHJpZCxTcGFpbg==": "Madrid",
+      "w+CAIQICIiUHJvdmluY2Ugb2YgTWFsYWdhLEFuZGFsdXNpYSxTcGFpbg==": "Málaga",
+      "w+CAIQICIfUHJvdmluY2Ugb2YgTXVyY2lhLE11cmNpYSxTcGFpbg==": "Murcia",
+      "w+CAIQICIhUHJvdmluY2Ugb2YgTmF2YXJyZSxOYXZhcnJlLFNwYWlu": "Navarra",
+      "w+CAIQICIrUHJvdmluY2Ugb2YgUGFsZW5jaWEsQ2FzdGlsZSBhbmQgTGVvbixTcGFpbg==": "Palencia",
+      "w+CAIQICIkUHJvdmluY2Ugb2YgUG9udGV2ZWRyYSxHYWxpY2lhLFNwYWlu": "Pontevedra",
+      "w+CAIQICIiUHJvdmluY2Ugb2YgR2lyb25hLENhdGFsb25pYSxTcGFpbg==": "Girona",
+      "w+CAIQICIhUHJvdmluY2Ugb2YgT3VyZW5zZSxHYWxpY2lhLFNwYWlu": "Orense",
+      "w+CAIQICIsUHJvdmluY2Ugb2YgU2FsYW1hbmNhLENhc3RpbGUgYW5kIExlb24sU3BhaW4=": "Salamanca",
+      "w+CAIQICI3UHJvdmluY2Ugb2YgU2FudGEgQ3J1eiBkZSBUZW5lcmlmZSxDYW5hcnkgSXNsYW5kcyxTcGFpbg==": "Santa Cruz de Tenerife",
+      "w+CAIQICIqUHJvdmluY2Ugb2YgU2Vnb3ZpYSxDYXN0aWxlIGFuZCBMZW9uLFNwYWlu": "Segovia",
+      "w+CAIQICIjUHJvdmluY2Ugb2YgU2V2aWxsYSxBbmRhbHVzaWEsU3BhaW4=": "Sevilla",
+      "w+CAIQICIoUHJvdmluY2Ugb2YgU29yaWEsQ2FzdGlsZSBhbmQgTGVvbixTcGFpbg==": "Soria",
+      "w+CAIQICIlUHJvdmluY2Ugb2YgVGFycmFnb25hLENhdGFsb25pYSxTcGFpbg==": "Tarragona",
+      "w+CAIQICIfUHJvdmluY2Ugb2YgVGVydWVsLEFyYWdvbixTcGFpbg==": "Teruel",
+      "w+CAIQICIqUHJvdmluY2Ugb2YgVG9sZWRvLENhc3RpbGUtTGEgTWFuY2hhLFNwYWlu": "Toledo",
+      "w+CAIQICIjUHJvdmluY2Ugb2YgVmFsZW5jaWEsVmFsZW5jaWEsU3BhaW4=": "Valencia",
+      "w+CAIQICItUHJvdmluY2Ugb2YgVmFsbGFkb2xpZCxDYXN0aWxlIGFuZCBMZW9uLFNwYWlu": "Valladolid",
+      "w+CAIQICIpUHJvdmluY2Ugb2YgWmFtb3JhLENhc3RpbGUgYW5kIExlb24sU3BhaW4=": "Zamora",
+      "w+CAIQICIhUHJvdmluY2Ugb2YgWmFyYWdvemEsQXJhZ29uLFNwYWlu": "Zaragoza",
+  }
+  #añadimos selectbox al sidebar para seleccionar la ubicación donde queremos realizar la búsqueda
+  uule = st.sidebar.multiselect('Ubicación de la búsqueda', list(uules.items()), format_func=lambda o: o[1])
 
-#Definimos los datos para el selectbox de frecuencia de rastreo
-import random
-frecuencias = {
-    random.randrange(5*60,10*60): "Cada 5-10 minutos",
-    random.randrange(10*60,15*60): "Cada 10-15 minutos",
-    random.randrange(30*60,45*60): "Cada 30-45 minutos",  
-}
-#añadimos al sidebar el selectbox las frecuencia de rastreo definidas
-frecuencia = st.sidebar.selectbox('Frecuencia de rastreo', list(frecuencias.items()), 0 , format_func=lambda o: o[1])
+  #Definimos los datos para el selectbox de frecuencia de rastreo
+  import random
+  frecuencias = {
+      random.randrange(5*60,10*60): "Cada 5-10 minutos",
+      random.randrange(10*60,15*60): "Cada 10-15 minutos",
+      random.randrange(30*60,45*60): "Cada 30-45 minutos",  
+  }
+  #añadimos al sidebar el selectbox las frecuencia de rastreo definidas
+  frecuencia = st.sidebar.selectbox('Frecuencia de rastreo', list(frecuencias.items()), 0 , format_func=lambda o: o[1])
 
-#abrimos la spreadsheet donde se almacenan los resultados de búsqueda y los históricos
-ss = gc.open_by_url(st.secrets["sheet"])
-sheet = ss.sheet1 #definimos la hoja1 de la spreadsheet
-lista_wk = ss.worksheets() #sacamos una lista de todas las hojas que hay en la spreadsheet
-lista_titulos_wk = [worksheet.title for worksheet in lista_wk] #creamos una lista con todos los títulos de cada hoja dentro de la spreadsheet, ya que la anterior lista contiene más datos además del título.
+  #abrimos la spreadsheet donde se almacenan los resultados de búsqueda y los históricos
+  ss = gc.open_by_url(st.secrets["sheet"])
+  sheet = ss.sheet1 #definimos la hoja1 de la spreadsheet
+  lista_wk = ss.worksheets() #sacamos una lista de todas las hojas que hay en la spreadsheet
+  lista_titulos_wk = [worksheet.title for worksheet in lista_wk] #creamos una lista con todos los títulos de cada hoja dentro de la spreadsheet, ya que la anterior lista contiene más datos además del título.
 
-#añadimos al sidebar el selectbox para seleccionar históricos menos la hoja 1
-historicos = st.sidebar.selectbox("Históricos", lista_titulos_wk[1:], index=0) 
+  #añadimos al sidebar el selectbox para seleccionar históricos menos la hoja 1
+  historicos = st.sidebar.selectbox("Históricos", lista_titulos_wk[1:], index=0) 
 
-#creamos el botón para borrar el histórico seleccionado en el selectbox e incluimos el código a ejecutar si el botón es pulsado
-if st.sidebar.button('borrar histórico'):
-  wk_del_historico = ss.worksheet(historicos) #definimos la hoja a borrar
-  ss.del_worksheet(wk_del_historico) #borramos la hoja
-  st.write(wk_del_historico.title + ' borrado correctamente') #ponemos mensaje de confirmación
-  st.experimental_rerun()
+  #creamos el botón para borrar el histórico seleccionado en el selectbox e incluimos el código a ejecutar si el botón es pulsado
+  if st.sidebar.button('borrar histórico'):
+    wk_del_historico = ss.worksheet(historicos) #definimos la hoja a borrar
+    ss.del_worksheet(wk_del_historico) #borramos la hoja
+    st.write(wk_del_historico.title + ' borrado correctamente') #ponemos mensaje de confirmación
+    st.experimental_rerun()
 
-#añadimos a la barra lateral de la página de streamlit un text area para introducir las búsquedas a monitorizar
-busquedas = st.sidebar.text_area('Introduce las búsquedas a monitorizar (una por línea)', height=100)
-query_list = busquedas.split("\n")
+  #añadimos a la barra lateral de la página de streamlit un text area para introducir las búsquedas a monitorizar
+  busquedas = st.sidebar.text_area('Introduce las búsquedas a monitorizar (una por línea)', height=100)
+  query_list = busquedas.split("\n")
+  submit_button = st.form_submit_button(label='Iniciar')
 
 #Si el campo de tipo de resultado está vacío paramos el script y mostramos un mensaje de advertencia
 if tipos_resultados == []:
