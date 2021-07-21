@@ -519,7 +519,7 @@ st.set_page_config(
 #añadimos un título a la página de streamlit
 st.title('Monitorización en Directo')
 
-with st.form(key='my_form'):
+with st.sidebar.form(key='my_form'):
   #input email donde recibir las alertas
   email_destinatario= st.sidebar.text_input('Email para recibir alertas')
 
