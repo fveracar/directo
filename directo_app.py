@@ -281,20 +281,6 @@ def entidades (df_r):
   from matplotlib.pyplot import figure
 
   #creamos un dict con el contenido de las credenciales de json
-  '''
-  contenido_json = {
-    "type": "service_account",
-    "project_id": "api-project-932805322312",
-    "private_key_id": "9f3557894e4f2abb00edb7dd38b9799770f834f5",
-    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCoRuY5UrVrjRnn\n2TnICxVepkfch0dy1cARJ0zdiGtX96KtxeNaj3cpM2IhLn91OuU+4yEfjdLyY/dJ\nR8mKmOm5rKhCzbjb+RjXbSTPfLXJ1mQjEBWBBRq4APoGsQJkLqQrvO9TjQr+jpCX\nk1q0xZFCzhBjtINr5XtYxzt2R3rwlsg9xBFLT7kFf4xzk5Jgz1bROxfwegGg9KDq\nwgU7HQGLmiTme4kIOcNbfXUZX93SA4+DNsVnFtiE6hES5MlINyC0b3QYzlYTiXqh\ny4jjrzoKhZHUliSw0HTeyTSTBJK6DWBz+kDXj6rwBXoX86vMVvA5fXNJPFo+bC+R\n8wSaicJNAgMBAAECggEACkR3MCi0gpkzqzKVJLhOZ73IFTPY33Ac3b8S4NJ90Dp/\nHdC8+E3YJLaqpmEmrEG5cp6bqwf1hs4kLL+5U6BUZHydMKRKQvu+MQjLDfDrS6Mt\n7XjCAyMLWA5RMx7SSUgSQsvuo1+v+8u5lVILnwuN+zBFDjxZp3fzUH2pimQ+o1bK\ndvmsRAxkPsZmnYmEC43BgcPBilwObFhdDsxSbGrr4Q3/PzeA14rFhQTctJjSdgeO\n6bQkjtq9HpkRGzOREggUxfUSho2SwT+WjeTOD5Op1f9FZ4vUxhLijYjlNjdH3Wzh\nWgVdTd4ROzzwAvcd97VEGX1o4mdSgGWXa+GnMQzxkQKBgQDjLSLiPHNwVQJOofBc\nlmIY8HUAmOje/6xjZAe3cq/MKZsxzEnphgneNY+JF3HK/ESqZH8Ha3QhPEvC/ljn\n0Jh7oIQ3hU6iZApSFI7mZUaNsWZYYmUcVptyhKn/ToW1az6SOXh/azhyNAC6J63Z\nTfUSAi5pMtyDjJreSbPTathFUQKBgQC9oKpzh38BBjwTfVjIFob5T7AIYs/v0gf0\nV1AITk1nUecdZ+XqaLdC71PwfdbEPm7jwkDXGFBGnnD3PGdfNldzedENtJta1lGj\nBexvw/fgJWMPVSS0TNlGwzbMtzxj+guv12PaeOF/nfditzToxJC2AtgAk41hAwVk\ntsnjBVXePQKBgQCS9RDa3xYiNau/aDyP+GxPC8X0c/Y4w5Yl2YCwaE1Wuhd9+FRb\n72yUxXsryPHAyL42p7oQ967xDQtJgbXLiAIL/0NokyDSJfsTK99hJWSlpnu5czVL\nRq9aPn2l/Yq7WDvq5aiQbLDgF8ncomxw5WBCnQye2tsRcjSA1Zaxji2HcQKBgHTT\nXy/98kj3Rlvbha7/8ff3GESSW/ksNKpcgHodg6J72x9Ku2NHUGB0ggpP/Ni6fibj\nrn7WA97+DirDlAwctpP2IM2Iz42PLIx7Qcc5vKTjY7w2gH50OghWjJRi71nI2xpi\nYKpgfszYzWiL5pThRSZdaiYwwZFbAx+hXY/34YchAoGBAIXXSXccL0ADeuMAlQdj\npft0IlFuBg8YHGkfr3jG/DpyOmetpLSGMM5hi5uQeGp6pKQeAR1FFxxCpZTur+Sr\nTKvlA2r2sVTW0N5AWGsIQTjzWRMtUnl6DfeMaxdKQqkL3yJ5ejM6PEwiP5RsAv0E\nHB3+JCWX2JmjxG9DjBd80W/D\n-----END PRIVATE KEY-----\n",
-    "client_email": "api-index@api-project-932805322312.iam.gserviceaccount.com",
-    "client_id": "109041789343084226730",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/api-index%40api-project-932805322312.iam.gserviceaccount.com"
-  }
-  '''
   contenido_json = {
     "type": st.secrets["type"],
     "project_id": st.secrets["project_id"],
