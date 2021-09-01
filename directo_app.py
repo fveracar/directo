@@ -11,6 +11,7 @@ import gspread
 import json
 import tempfile
 import os
+import time
 
 #creamos un dict con el contenido de las credenciales de json
 contenido_json = {
@@ -37,6 +38,7 @@ try:
   sh = gc.open_by_url(st.secrets["sheet"])
 finally:
   os.unlink(fp.name)
+
 
 ############################   DECLARACIÓN DE FUNCIONES  ###############################
 ########################################################################################
@@ -190,30 +192,40 @@ def almacenamiento_rastreo (hoja_resultados, df_r, texto_resultado_query, nombre
     update_hoja_resultados (hoja_resultados=hoja_resultados, df_r=df_r, texto_resultado_query=texto_resultado_query, nombre_expander=nombre_expander, url=url, num_col_hora=3, num_col_query=4, num_col_resultado=5, rango='C:E', indice=3)
   elif nombre_expander == nombre_expander_c_m:
     update_hoja_resultados (hoja_resultados=hoja_resultados, df_r=df_r, texto_resultado_query=texto_resultado_query, nombre_expander=nombre_expander,url=url, num_col_hora=6, num_col_query=7, num_col_resultado=8, rango='F:H', indice=6)
-    entidades(df_r=df_r)
+    if df_r.empty != True: 
+      entidades(df_r=df_r)
   elif nombre_expander == nombre_expander_b_d:
     update_hoja_resultados (hoja_resultados=hoja_resultados, df_r=df_r, texto_resultado_query=texto_resultado_query, nombre_expander=nombre_expander,url=url, num_col_hora=9, num_col_query=10, num_col_resultado=11, rango='I:K', indice=9)
   elif nombre_expander == nombre_expander_c_d:
     update_hoja_resultados (hoja_resultados=hoja_resultados, df_r=df_r, texto_resultado_query=texto_resultado_query, nombre_expander=nombre_expander,url=url, num_col_hora=12, num_col_query=13, num_col_resultado=14, rango='L:N', indice=12)
-    entidades(df_r=df_r)
+    if df_r.empty != True: 
+      entidades(df_r=df_r)
 
 
 #===========>FUNCIÓN 5 <===============
 #Función anidada dentro de la función almacenamiento rastreo. Función para actualizar las celdas de la hoja de spreadsheet con los datos obtenidos del rastreo.
 def update_hoja_resultados (hoja_resultados, df_r, texto_resultado_query, nombre_expander, num_col_hora, num_col_query, num_col_resultado, rango, indice, url):
-  patron = re.compile(patron_seleccionado[0]) #creamos el patrón para buscar la url entre los resultados usando regex para obtener el valor de la posición.
+  #patron = re.compile(patron_seleccionado[0]) #creamos el patrón para buscar la url entre los resultados usando regex para obtener el valor de la posición.
   #creamos un for para recorrer las celdas con los resultados del rastreo y buscar dentro de ella si contiene la expresion elegida en el menú. 
-  columna_resultados = hoja_resultados.col_values(2) #averiguamos cuantas celdas tienen contenido en la columna 2 para saber la duración del for
-  for n in range (len(columna_resultados)):
-    encontrarPatron = patron.search(hoja_resultados.cell(n+1,2).value) #buscamos el patrón en cada celda de la columna dos
-    if encontrarPatron != None: #Si la encuentra nos da el valor de la celda que contiene la posición. Sumamos 1 porque la primera celda de la columna está vacía.
-      pos = hoja_resultados.cell(n+1,1).value
-      resultado_query = hoja_resultados.cell(n+1,2).value
-      break #si encuentra la expresión salimos del condicional
-    else:
-      pos = 0 #Si no, la posición será 0.
-      resultado_query = texto_resultado_query
+  #columna_resultados = hoja_resultados.col_values(2) #averiguamos cuantas celdas tienen contenido en la columna 2 para saber la duración del for
   
+  tabla_resultados = hoja_resultados.batch_get(['A2:B'])
+
+  if len(tabla_resultados[0]) == 0:
+    pos=0
+    st.write('no ha devuelto resultados o no existe carrusel para esta búsqueda')
+    resultado_query = texto_resultado_query
+  else:
+    for resultado in tabla_resultados[0]:
+      if 'sevilla.abc.es' in resultado[1]:
+        st.write(f'Posición:{resultado[0]} - Url:{resultado[1]}')
+        pos = resultado[0]
+        resultado_query=resultado[1]
+        break
+      else:
+        pos=0
+        resultado_query = texto_resultado_query
+
   #si no está posicionando enviamos una alerta por email
   if pos==0 and email_destinatario != "":
     envio_email(resultado_query)
@@ -232,13 +244,14 @@ def update_hoja_resultados (hoja_resultados, df_r, texto_resultado_query, nombre
     hoja_resultados.update_cell(len(valores_col_query)+1, num_col_hora, str(hora_madrid.strftime('%Y-%m-%d %H:%M:%S'))) #registramos la hora en la misma fila y en la columna anterior.
     hoja_resultados.update_cell(len(valores_col_query)+1, num_col_query, pos) #actualizamos la siguiente celda vacía en la columna de la query el valor de la posición
     hoja_resultados.update_cell(len(valores_col_query)+1, num_col_resultado, resultado_query) #registramos el snippet
-
+  
+  pd.set_option("display.max_colwidth", None) #configuramos el pandas para que muestre el ancho de columna entero
   df_historico = pd.DataFrame(hoja_resultados.get(rango)) #definimos el dataframe con los datos del histórico
 
   #CREACIÓN DE TABLAS Y GRÁFICOS RESULTADOS DE BÚSQUEDA
   df_historico.columns = df_historico.iloc[0]
   dfFinal = df_historico.drop([0], axis=0)
-  with st.beta_expander(nombre_expander, expanded=True):
+  with st.expander(nombre_expander, expanded=False):
     st.text('Posición último rastreo: ' + str(pos)+ '\nla url de búsqueda es: ' + url)
     st.subheader('Resultados búsqueda')
     st.dataframe(df_r)#Pintamos el dataframe con los resultados de la última búsqueda
@@ -268,6 +281,20 @@ def entidades (df_r):
   from matplotlib.pyplot import figure
 
   #creamos un dict con el contenido de las credenciales de json
+  '''
+  contenido_json = {
+    "type": "service_account",
+    "project_id": "api-project-932805322312",
+    "private_key_id": "9f3557894e4f2abb00edb7dd38b9799770f834f5",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCoRuY5UrVrjRnn\n2TnICxVepkfch0dy1cARJ0zdiGtX96KtxeNaj3cpM2IhLn91OuU+4yEfjdLyY/dJ\nR8mKmOm5rKhCzbjb+RjXbSTPfLXJ1mQjEBWBBRq4APoGsQJkLqQrvO9TjQr+jpCX\nk1q0xZFCzhBjtINr5XtYxzt2R3rwlsg9xBFLT7kFf4xzk5Jgz1bROxfwegGg9KDq\nwgU7HQGLmiTme4kIOcNbfXUZX93SA4+DNsVnFtiE6hES5MlINyC0b3QYzlYTiXqh\ny4jjrzoKhZHUliSw0HTeyTSTBJK6DWBz+kDXj6rwBXoX86vMVvA5fXNJPFo+bC+R\n8wSaicJNAgMBAAECggEACkR3MCi0gpkzqzKVJLhOZ73IFTPY33Ac3b8S4NJ90Dp/\nHdC8+E3YJLaqpmEmrEG5cp6bqwf1hs4kLL+5U6BUZHydMKRKQvu+MQjLDfDrS6Mt\n7XjCAyMLWA5RMx7SSUgSQsvuo1+v+8u5lVILnwuN+zBFDjxZp3fzUH2pimQ+o1bK\ndvmsRAxkPsZmnYmEC43BgcPBilwObFhdDsxSbGrr4Q3/PzeA14rFhQTctJjSdgeO\n6bQkjtq9HpkRGzOREggUxfUSho2SwT+WjeTOD5Op1f9FZ4vUxhLijYjlNjdH3Wzh\nWgVdTd4ROzzwAvcd97VEGX1o4mdSgGWXa+GnMQzxkQKBgQDjLSLiPHNwVQJOofBc\nlmIY8HUAmOje/6xjZAe3cq/MKZsxzEnphgneNY+JF3HK/ESqZH8Ha3QhPEvC/ljn\n0Jh7oIQ3hU6iZApSFI7mZUaNsWZYYmUcVptyhKn/ToW1az6SOXh/azhyNAC6J63Z\nTfUSAi5pMtyDjJreSbPTathFUQKBgQC9oKpzh38BBjwTfVjIFob5T7AIYs/v0gf0\nV1AITk1nUecdZ+XqaLdC71PwfdbEPm7jwkDXGFBGnnD3PGdfNldzedENtJta1lGj\nBexvw/fgJWMPVSS0TNlGwzbMtzxj+guv12PaeOF/nfditzToxJC2AtgAk41hAwVk\ntsnjBVXePQKBgQCS9RDa3xYiNau/aDyP+GxPC8X0c/Y4w5Yl2YCwaE1Wuhd9+FRb\n72yUxXsryPHAyL42p7oQ967xDQtJgbXLiAIL/0NokyDSJfsTK99hJWSlpnu5czVL\nRq9aPn2l/Yq7WDvq5aiQbLDgF8ncomxw5WBCnQye2tsRcjSA1Zaxji2HcQKBgHTT\nXy/98kj3Rlvbha7/8ff3GESSW/ksNKpcgHodg6J72x9Ku2NHUGB0ggpP/Ni6fibj\nrn7WA97+DirDlAwctpP2IM2Iz42PLIx7Qcc5vKTjY7w2gH50OghWjJRi71nI2xpi\nYKpgfszYzWiL5pThRSZdaiYwwZFbAx+hXY/34YchAoGBAIXXSXccL0ADeuMAlQdj\npft0IlFuBg8YHGkfr3jG/DpyOmetpLSGMM5hi5uQeGp6pKQeAR1FFxxCpZTur+Sr\nTKvlA2r2sVTW0N5AWGsIQTjzWRMtUnl6DfeMaxdKQqkL3yJ5ejM6PEwiP5RsAv0E\nHB3+JCWX2JmjxG9DjBd80W/D\n-----END PRIVATE KEY-----\n",
+    "client_email": "api-index@api-project-932805322312.iam.gserviceaccount.com",
+    "client_id": "109041789343084226730",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/api-index%40api-project-932805322312.iam.gserviceaccount.com"
+  }
+  '''
   contenido_json = {
     "type": st.secrets["type"],
     "project_id": st.secrets["project_id"],
@@ -284,7 +311,7 @@ def entidades (df_r):
   #convertimos el dict en un JSON
   uploaded_file = json.dumps(contenido_json)
 
-  #guardamos el JSON en un archivo temporal para poder llamar al path donde se encuentra el archivo JSON
+  #guardamos el JSON en un archivo temporal para poder llamar al path donde se encuentra el archivo JSON en GOOGLE_APPLICATION_CREDENTIALS
   with tempfile.NamedTemporaryFile(mode='w', delete=False) as fp:
     #fp.write(uploaded_file.getvalue())
     fp.write(uploaded_file)
@@ -299,208 +326,205 @@ def entidades (df_r):
 
   import requests
   from requests_html import HTMLSession
+
+  url = df_r.iloc[0]['Resultados']
+  try:
+      session = HTMLSession()
+      response = session.get(url)
+      
+  except requests.exceptions.RequestException as e:
+      st.write(e)
+
+  #dominios objetivo
+  dominio_abc = 'abc.es'
+  dominio_voz = 'lavozdigital.es'
+  dominio_hoy = 'hoy.es'
+  dominio_rioja = 'larioja.com'
+  dominio_correo = 'elcorreo.com'
+  dominio_norteCastilla = 'elnortedecastilla.es'
+  dominio_diarioVasco = 'diariovasco.com'
+  dominio_comercio = 'elcomercio.es'
+  dominio_ideal = 'ideal.es'
+  dominio_sur = 'diariosur.es'
+  dominio_provincias = 'lasprovincias.es'
+  dominio_montanes = 'eldiariomontanes.es'
+  dominio_verdad = 'laverdad.es'
+  dominio_leon = 'leonoticias.com'
+  dominio_burgos = 'burgosconecta.es'
+
+  #dominios competencia
+  dominio_mundo = 'elmundo.es'
+  dominio_pais = 'elpais.com'
+  dominio_vanguardia = 'lavanguardia.com'
+
+  #elementos HTML para la extracción del texto de la noticia
+  elemento_abc = '.cuerpo-texto > p'
+  elemento_ppll = '.voc-paragraph'
+  elemento_mundo = '.content > p'
+  elemento_pais = '.article_body > p'
+  elemento_vanguardia = '.amp-scribble-content > p'
+
   
-  if df_r.empty:
-    return
-  else:  
-    url = df_r.iloc[0]['Resultados']
-    try:
-        session = HTMLSession()
-        response = session.get(url)
+    
+  with st.expander('Entidades'):
+    st.header('Texto de la página')
+    st.write (url)
+    
+    #Realizamos un condicional para saber de qué dominio se trata la URL y extraer el elemento correspondiente a ese dominio.
+    if dominio_abc in url:
+      p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_mundo in url:
+      p =  response.html.find(elemento_mundo) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_pais in url:
+      p =  response.html.find(elemento_pais) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_vanguardia in url:
+      p =  response.html.find(elemento_vanguardia) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_voz in url:
+      p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
+    elif dominio_hoy in url or dominio_rioja in url or dominio_correo in url or dominio_norteCastilla in url or dominio_diarioVasco in url or dominio_comercio in url or dominio_ideal in url or dominio_sur in url or dominio_provincias in url or dominio_montanes in url or dominio_verdad in url or dominio_leon in url or dominio_burgos in url:
+      p =  response.html.find(elemento_ppll) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
+      array = [] #creamos un array vacio.
+      for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
+        array.append(p[i].text)
+      texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable. 
+    else:
+      st.write('El dominio de la URL: ' + url + ' \nno se encuentra entre nuestros dominios objetivo o la competencia directa, y por lo tanto, no se puede extraer el texto. \nSi deseas incluir este dominio para su análisis, por favor, ponte en contacto con fvera@vocento.com')
+      texto = ''
+      
+    if texto != '':    
+      st.write(texto)
 
-    except requests.exceptions.RequestException as e:
-        st.write(e)
+      col1, col2 = st.beta_columns(2)
 
-    #dominios objetivo
-    dominio_abc = 'abc.es'
-    dominio_voz = 'lavozdigital.es'
-    dominio_hoy = 'hoy.es'
-    dominio_rioja = 'larioja.com'
-    dominio_correo = 'elcorreo.com'
-    dominio_norteCastilla = 'elnortedecastilla.es'
-    dominio_diarioVasco = 'diariovasco.com'
-    dominio_comercio = 'elcomercio.es'
-    dominio_ideal = 'ideal.es'
-    dominio_sur = 'diariosur.es'
-    dominio_provincias = 'lasprovincias.es'
-    dominio_montanes = 'eldiariomontanes.es'
-    dominio_verdad = 'laverdad.es'
-    dominio_leon = 'leonoticias.com'
-    dominio_burgos = 'burgosconecta.es'
+      with col1:
+        st.header('Entidades')
+        # tipos disponibles: PLAIN_TEXT, HTML
+        type_ = enums.Document.Type.PLAIN_TEXT
 
-    #dominios competencia
-    dominio_mundo = 'elmundo.es'
-    dominio_pais = 'elpais.com'
-    dominio_vanguardia = 'lavanguardia.com'
+        #opcional. si no se define el idioma se detecta automáticamente
+        language = "es"
+        document = {"content": texto, "type": type_, "language": language}
 
-    #elementos HTML para la extracción del texto de la noticia
-    elemento_abc = '.cuerpo-texto > p'
-    elemento_ppll = '.voc-paragraph'
-    elemento_mundo = '.content > p'
-    elemento_pais = '.article_body > p'
-    elemento_vanguardia = '.amp-scribble-content > p'
+        # valores disponibles: NONE, UTF8, UTF16, UTF32
+        encoding_type = enums.EncodingType.UTF8
 
+        response = client.analyze_entities(document, encoding_type=encoding_type)
 
+        # Bucle para recoger la entidades devueltas por la API
+        for entity in response.entities:
+            st.write(u"Entity Name: {}".format(entity.name))
 
-    with st.beta_expander('Entidades'):
-      st.header('Texto de la página')
-      st.write (url)
+            # Obtenemos tipo de entidad
+            st.write(u"Entity type: {}".format(enums.Entity.Type(entity.type).name))
 
-      #Realizamos un condicional para saber de qué dominio se trata la URL y extraer el elemento correspondiente a ese dominio.
-      if dominio_abc in url:
-        p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-        array = [] #creamos un array vacio.
-        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-          array.append(p[i].text)
-        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-      elif dominio_mundo in url:
-        p =  response.html.find(elemento_mundo) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-        array = [] #creamos un array vacio.
-        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-          array.append(p[i].text)
-        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-      elif dominio_pais in url:
-        p =  response.html.find(elemento_pais) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-        array = [] #creamos un array vacio.
-        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-          array.append(p[i].text)
-        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-      elif dominio_vanguardia in url:
-        p =  response.html.find(elemento_vanguardia) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-        array = [] #creamos un array vacio.
-        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-          array.append(p[i].text)
-        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-      elif dominio_voz in url:
-        p =  response.html.find(elemento_abc) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-        array = [] #creamos un array vacio.
-        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-          array.append(p[i].text)
-        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable.
-      elif dominio_hoy in url or dominio_rioja in url or dominio_correo in url or dominio_norteCastilla in url or dominio_diarioVasco in url or dominio_comercio in url or dominio_ideal in url or dominio_sur in url or dominio_provincias in url or dominio_montanes in url or dominio_verdad in url or dominio_leon in url or dominio_burgos in url:
-        p =  response.html.find(elemento_ppll) #buscamos los elementos <p> de dentro de la clase cuerpo-texto.
-        array = [] #creamos un array vacio.
-        for i in range(len(p)): #recorremos todos los <p> de dentro de la clase cuerpo-texto para almacenarlos en el array vacio que acabamos de crear
-          array.append(p[i].text)
-        texto = " ".join(array) #concatenamos todos los textos (valores) del array para almacenar el texto completo de la noticia en una variable. 
-      else:
-        st.write('El dominio de la URL: ' + url + ' \nno se encuentra entre nuestros dominios objetivo o la competencia directa, y por lo tanto, no se puede extraer el texto. \nSi deseas incluir este dominio para su análisis, por favor, ponte en contacto con fvera@vocento.com')
-        texto = ''
+            # Obtenemos el salience score asociado con la entidad en un rango de [0, 1.0]
+            st.write(u"Salience score: {}".format(round(entity.salience,3)))
 
-      if texto != '':    
-        st.write(texto)
-
-        col1, col2 = st.beta_columns(2)
-
-        with col1:
-          st.header('Entidades')
-          # tipos disponibles: PLAIN_TEXT, HTML
-          type_ = enums.Document.Type.PLAIN_TEXT
-
-          #opcional. si no se define el idioma se detecta automáticamente
-          language = "es"
-          document = {"content": texto, "type": type_, "language": language}
-
-          # valores disponibles: NONE, UTF8, UTF16, UTF32
-          encoding_type = enums.EncodingType.UTF8
-
-          response = client.analyze_entities(document, encoding_type=encoding_type)
-
-          # Bucle para recoger la entidades devueltas por la API
-          for entity in response.entities:
-              st.write(u"Entity Name: {}".format(entity.name))
-
-              # Obtenemos tipo de entidad
-              st.write(u"Entity type: {}".format(enums.Entity.Type(entity.type).name))
-
-              # Obtenemos el salience score asociado con la entidad en un rango de [0, 1.0]
-              st.write(u"Salience score: {}".format(round(entity.salience,3)))
-
-              # Bucle sobre cada metadata asociada con la entidad
-              for metadata_name, metadata_value in entity.metadata.items():
-                  st.write(u"{}: {}".format(metadata_name, metadata_value))
+            # Bucle sobre cada metadata asociada con la entidad
+            for metadata_name, metadata_value in entity.metadata.items():
+                st.write(u"{}: {}".format(metadata_name, metadata_value))
 
 
-              # Loop over the mentions of this entity in the input document.
-              #for mention in entity.mentions:
-                  #st.write(u"Mention text: {}".format(mention.text.content))
+            # Loop over the mentions of this entity in the input document.
+            #for mention in entity.mentions:
+                #st.write(u"Mention text: {}".format(mention.text.content))
 
-                  # Get the mention type, e.g. PROPER for proper noun
-                  #st.write(
-                      #u"Mention type: {}".format(enums.EntityMention.Type(mention.type).name)
-                  #)'''
-              st.write('\n')
+                # Get the mention type, e.g. PROPER for proper noun
+                #st.write(
+                    #u"Mention type: {}".format(enums.EntityMention.Type(mention.type).name)
+                #)'''
+            st.write('\n')
 
-        with col2:
-          ####################################### Analizamos el sentimiento del texto
-          st.header('Análisis del texto')
-          document = types.Document(
-              content=texto,
-              type=enums.Document.Type.PLAIN_TEXT)
+      with col2:
+        ####################################### Analizamos el sentimiento del texto
+        st.header('Análisis del texto')
+        document = types.Document(
+            content=texto,
+            type=enums.Document.Type.PLAIN_TEXT)
 
-          # Detectamos el sentimiento del texto
-          sentiment = client.analyze_sentiment(document=document).document_sentiment
-          sscore = round(sentiment.score,4)
-          smag = round(sentiment.magnitude,4)
+        # Detectamos el sentimiento del texto
+        sentiment = client.analyze_sentiment(document=document).document_sentiment
+        sscore = round(sentiment.score,4)
+        smag = round(sentiment.magnitude,4)
 
-          if sscore < 1 and sscore < -0.5:
-            sent_label = "Muy Negativo"
-          elif sscore < 0 and sscore > -0.5:
-            sent_label = "Negativo"
-          elif sscore == 0:
-            sent_label = "Neutral"
-          elif sscore > 1 and sscore > 1.5:
-            sent_label = "Muy Positivo"
-          elif sscore > 0 and sscore < 1.5:
-            sent_label = "Positivo"
+        if sscore < 1 and sscore < -0.5:
+          sent_label = "Muy Negativo"
+        elif sscore < 0 and sscore > -0.5:
+          sent_label = "Negativo"
+        elif sscore == 0:
+          sent_label = "Neutral"
+        elif sscore > 1 and sscore > 1.5:
+          sent_label = "Muy Positivo"
+        elif sscore > 0 and sscore < 1.5:
+          sent_label = "Positivo"
 
-          st.subheader('Sentiment Score: {} es {}'.format(sscore,sent_label))
+        st.subheader('Sentiment Score: {} es {}'.format(sscore,sent_label))
 
-          predictedY =[sscore] 
-          UnlabelledY=[0,1,0]
+        predictedY =[sscore] 
+        UnlabelledY=[0,1,0]
 
-          if sscore < 0:
-              plotcolor = 'red'
-          else:
-              plotcolor = 'green'
+        if sscore < 0:
+            plotcolor = 'red'
+        else:
+            plotcolor = 'green'
 
-          plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
+        plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
 
-          plt.yticks([])
-          plt.subplots_adjust(top=0.9,bottom=0.8)
-          plt.xlim(-1,1)
-          plt.xlabel('Negativo                                                            Positivo')
-          plt.title("Tipo de Sentimiento")
-          st.set_option('deprecation.showPyplotGlobalUse', False)
-          st.pyplot(plt.show())
+        plt.yticks([])
+        plt.subplots_adjust(top=0.9,bottom=0.8)
+        plt.xlim(-1,1)
+        plt.xlabel('Negativo                                                            Positivo')
+        plt.title("Tipo de Sentimiento")
+        st.set_option('deprecation.showPyplotGlobalUse', False)
+        st.pyplot(plt.show())
 
-          # detectamos magnitud del sentimiento
-          if smag >= 0 and smag < 1:
-            sent_m_label = "Sin Emoción"
-          elif smag > 2:
-            sent_m_label = "Emoción Alta"
-          elif smag >= 1 and smag <= 2:
-            sent_m_label = "Emoción Baja"
+        # detectamos magnitud del sentimiento
+        if smag >= 0 and smag < 1:
+          sent_m_label = "Sin Emoción"
+        elif smag > 2:
+          sent_m_label = "Emoción Alta"
+        elif smag > 1 and smag < 2:
+          sent_m_label = "Emoción Baja"
 
-          st.subheader('Sentiment Magnitude: {} es {}'.format(smag, sent_m_label))
+        st.subheader('Sentiment Magnitude: {} es {}'.format(smag, sent_m_label))
 
-          predictedY =[smag] 
-          UnlabelledY=[0,1,0]
+        predictedY =[smag] 
+        UnlabelledY=[0,1,0]
 
-          if smag > 0 and smag < 2:
-              plotcolor = 'red'
-          else:
-              plotcolor = 'green'
+        if smag > 0 and smag < 2:
+            plotcolor = 'red'
+        else:
+            plotcolor = 'green'
 
-          plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
+        plt.scatter(predictedY, np.zeros_like(predictedY),color=plotcolor,s=100)
 
-          plt.yticks([])
-          plt.subplots_adjust(top=0.9,bottom=0.8)
-          plt.xlim(0,5)
-          plt.xlabel('Emoción Baja                                                          Emoción Alta')
-          plt.title("Análisis Sentiment Magnitude")
-          st.set_option('deprecation.showPyplotGlobalUse', False)
-          st.pyplot(plt.show())
+        plt.yticks([])
+        plt.subplots_adjust(top=0.9,bottom=0.8)
+        plt.xlim(0,5)
+        plt.xlabel('Emoción Baja                                                          Emoción Alta')
+        plt.title("Análisis Sentiment Magnitude")
+        st.set_option('deprecation.showPyplotGlobalUse', False)
+        st.pyplot(plt.show())
 
 
 
@@ -629,23 +653,24 @@ with st.sidebar.form(key='my_form'):
   sheet = ss.sheet1 #definimos la hoja1 de la spreadsheet
   lista_wk = ss.worksheets() #sacamos una lista de todas las hojas que hay en la spreadsheet
   lista_titulos_wk = [worksheet.title for worksheet in lista_wk] #creamos una lista con todos los títulos de cada hoja dentro de la spreadsheet, ya que la anterior lista contiene más datos además del título.
-  
+
   #añadimos a la barra lateral de la página de streamlit un text area para introducir las búsquedas a monitorizar
   busquedas = st.text_area('Introduce las búsquedas a monitorizar (una por línea)', height=100)
   query_list = busquedas.split("\n")
+
   submit_button = st.form_submit_button(label='Iniciar')
-  
+
 #añadimos al sidebar el selectbox para seleccionar históricos menos la hoja 1
 historicos = st.sidebar.selectbox("Históricos", lista_titulos_wk[1:], index=0) 
+
 #creamos el botón para borrar el histórico seleccionado en el selectbox e incluimos el código a ejecutar si el botón es pulsado
 if st.sidebar.button('borrar histórico'):
   wk_del_historico = ss.worksheet(historicos) #definimos la hoja a borrar
   ss.del_worksheet(wk_del_historico) #borramos la hoja
   st.write(wk_del_historico.title + ' borrado correctamente') #ponemos mensaje de confirmación
   st.experimental_rerun()
-  
-  
-  
+
+
 
 #Si el campo de tipo de resultado está vacío paramos el script y mostramos un mensaje de advertencia
 if tipos_resultados == []:
@@ -733,6 +758,7 @@ for i in range (len(query_list)):
       rastreo_busqueda (elemento_html=elemento_html_busqueda_desktop, nombre_expander=nombre_expander_b_d, user_agent=user_agent_desktop)
       rastreo_carrusel (elemento_html=elemento_html_carrusel, nombre_expander=nombre_expander_c_m, user_agent=user_agent_movil)
       rastreo_carrusel (elemento_html=elemento_html_carrusel, nombre_expander=nombre_expander_c_d, user_agent=user_agent_desktop)
+  time.sleep(random.randrange(10,15))
 
 
 
@@ -741,7 +767,6 @@ for i in range (len(query_list)):
 ##############################################################################################################
 
 #Generamos cuenta atrás hasta próximo rastreo
-import time
 with st.empty():
   t= frecuencia[0]
   while t:
