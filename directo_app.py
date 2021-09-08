@@ -251,6 +251,8 @@ def update_hoja_resultados (hoja_resultados, df_r, texto_resultado_query, nombre
   #CREACIÓN DE TABLAS Y GRÁFICOS RESULTADOS DE BÚSQUEDA
   df_historico.columns = df_historico.iloc[0]
   dfFinal = df_historico.drop([0], axis=0)
+  n_filas = len(dfFinal)-15 #restamos el total de filas menos el número de filas que queremos mostrar en la gráfica y obtendremos el número de filas que queremos eliminar
+  dfFinal_grafica = dfFinal.iloc[n_filas:] #eliminamos las n filas primeras
   with st.expander(nombre_expander, expanded=False):
     st.text('Posición último rastreo: ' + str(pos)+ '\nla url de búsqueda es: ' + url)
     st.subheader('Resultados búsqueda')
@@ -258,7 +260,7 @@ def update_hoja_resultados (hoja_resultados, df_r, texto_resultado_query, nombre
     st.subheader('Histórico de posiciones')
     st.dataframe(dfFinal) #pintamos el dataframe del histórico
     st.subheader('Gráfico de posiciones')
-    st.vega_lite_chart(dfFinal,{
+    st.vega_lite_chart(dfFinal_grafica,{
         'height': 300,
         #'width': 800,
         'mark': {'type':'line', 'point':True, 'tooltip':True},
