@@ -15,7 +15,7 @@ import json
 import tempfile
 import os
 import time
-from tld import get_fld
+#from tld import get_fld
 import urllib.request
 import sys
 sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')
