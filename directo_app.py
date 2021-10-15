@@ -1,28 +1,28 @@
-#!apt-get update # to update ubuntu to correctly run apt install
+$apt-get update # to update ubuntu to correctly run apt install
 #!apt install chromium-chromedriver #relacionado con las funciones de captura de pantalla
 #!cp /usr/lib/chromium-browser/chromedriver /usr/bin #relacionado con las funciones de captura de pantalla
 import requests
-#from requests_html import HTMLSession
+from requests_html import HTMLSession
 import pandas as pd
 import numpy as np
-#from gspread_dataframe import get_as_dataframe, set_with_dataframe
+from gspread_dataframe import get_as_dataframe, set_with_dataframe
 import re
 import datetime as dt
 import pytz as tz #timezone
 import streamlit as st
-#import gspread
+import gspread
 import json
 import tempfile
 import os
 import time
-#from tld import get_fld
+from tld import get_fld
 import urllib.request
 import sys
 sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')
-#from selenium import webdriver
-#from selenium.webdriver.common.by import By
-#from PIL import Image
-#from keybert import KeyBERT
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from PIL import Image
+from keybert import KeyBERT
 
 
 ############################   DECLARACIÓN DE FUNCIONES  ###############################
