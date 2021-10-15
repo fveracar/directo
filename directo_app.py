@@ -20,8 +20,8 @@ import urllib.request
 import sys
 sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')
 #from selenium import webdriver
-from selenium.webdriver.common.by import By
-from PIL import Image
+#from selenium.webdriver.common.by import By
+#from PIL import Image
 #from keybert import KeyBERT
 
 
