@@ -67,7 +67,6 @@ defusedxml==0.7.1
 descartes==1.1.0
 dill==0.3.4
 distributed==1.25.3
-dlib @ file:///dlib-19.18.0-cp37-cp37m-linux_x86_64.whl
 dm-tree==0.1.6
 docopt==0.6.2
 docutils==0.17.1
@@ -76,7 +75,6 @@ earthengine-api==0.1.284
 easydict==1.9
 ecos==2.0.7.post1
 editdistance==0.5.3
-en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
 entrypoints==0.3
 ephem==4.1
 et-xmlfile==1.1.0
@@ -119,7 +117,6 @@ google-cloud-firestore==1.7.0
 google-cloud-language==1.2.0
 google-cloud-storage==1.18.1
 google-cloud-translate==1.5.0
-google-colab @ file:///colabtools/dist/google-colab-1.0.0.tar.gz
 google-pasta==0.2.0
 google-resumable-media==0.4.1
 googleapis-common-protos==1.53.0
@@ -164,7 +161,6 @@ ipython-sql==0.3.9
 ipywidgets==7.6.5
 itsdangerous==1.1.0
 jax==0.2.21
-jaxlib @ https://storage.googleapis.com/jax-releases/cuda111/jaxlib-0.1.71+cuda111-cp37-none-manylinux2010_x86_64.whl
 jdcal==1.4.1
 jedi==0.18.0
 jieba==0.42.1
@@ -386,10 +382,8 @@ tokenizers==0.10.3
 toml==0.10.2
 tomli==1.2.1
 toolz==0.11.1
-torch @ https://download.pytorch.org/whl/cu111/torch-1.9.0%2Bcu111-cp37-cp37m-linux_x86_64.whl
 torchsummary==1.5.1
 torchtext==0.10.0
-torchvision @ https://download.pytorch.org/whl/cu111/torchvision-0.10.0%2Bcu111-cp37-cp37m-linux_x86_64.whl
 tornado==5.1.1
 tqdm==4.62.3
 traitlets==5.1.0
