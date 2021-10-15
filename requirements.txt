@@ -11,4 +11,3 @@ google-cloud-language==1.2.0
 matplotlib==3.2.2
 tld==0.12.6
 selenium==4.0.0
-keybert==0.5.0
