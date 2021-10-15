@@ -22,3 +22,8 @@ trio==0.19.0
 traitlets==5.1.0
 tqdm==4.62.3
 tornado==5.1.1
+torch==1.9.0
+tokenizers==0.10.3
+smmap==4.0.0
+six==1.15.0
+sentence-transformers==2.1.0
