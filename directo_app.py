@@ -10,7 +10,7 @@ import re
 import datetime as dt
 import pytz as tz #timezone
 import streamlit as st
-import gspread
+#import gspread
 import json
 import tempfile
 import os
