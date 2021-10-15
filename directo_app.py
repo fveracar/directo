@@ -2,7 +2,8 @@
 #!apt install chromium-chromedriver #relacionado con las funciones de captura de pantalla
 #!cp /usr/lib/chromium-browser/chromedriver /usr/bin #relacionado con las funciones de captura de pantalla
 import requests
-from requests_html import HTMLSession
+#from requests_html import HTMLSession
+import requests_html
 import pandas as pd
 import numpy as np
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
