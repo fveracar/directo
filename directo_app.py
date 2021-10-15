@@ -22,7 +22,7 @@ sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from PIL import Image
-from keybert import KeyBERT
+#from keybert import KeyBERT
 
 
 ############################   DECLARACIÓN DE FUNCIONES  ###############################
@@ -1415,6 +1415,7 @@ def capturaDesktop(url):
 #extracción de palabras/frases clave del texto
 
 def extrac_keybert(texto):
+  '''
   with st.expander('Palabras/frases clave del texto'):
     with st.spinner('Generando extracción...'):
       kw_model = KeyBERT(model='paraphrase-multilingual-mpnet-base-v2')
@@ -1423,6 +1424,7 @@ def extrac_keybert(texto):
       df = pd.DataFrame(data, columns=['Keyword','Relevancia'])
       df['Relevancia'] = df['Relevancia'].apply(lambda x: format(x, '.2%'))
     st.dataframe(df.sort_values('Relevancia', ascending=False).set_index('Keyword'))
+    '''
   
 
 
