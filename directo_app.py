@@ -5,7 +5,7 @@ import requests
 #from requests_html import HTMLSession
 import pandas as pd
 import numpy as np
-from gspread_dataframe import get_as_dataframe, set_with_dataframe
+#from gspread_dataframe import get_as_dataframe, set_with_dataframe
 import re
 import datetime as dt
 import pytz as tz #timezone
