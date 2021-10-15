@@ -1,6 +1,6 @@
 #!apt-get update # to update ubuntu to correctly run apt install
 #!apt install chromium-chromedriver #relacionado con las funciones de captura de pantalla
-!cp /usr/lib/chromium-browser/chromedriver /usr/bin #relacionado con las funciones de captura de pantalla
+#!cp /usr/lib/chromium-browser/chromedriver /usr/bin #relacionado con las funciones de captura de pantalla
 import requests
 from requests_html import HTMLSession
 import pandas as pd
