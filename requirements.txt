@@ -1,7 +1,6 @@
 gspread==3.7.0
 gspread-dataframe==3.0.8
 schedule==1.1.0
-streamlit==0.87.0
 streamlit==1.0.0
 pyngrok==5.0.5
 google-cloud-language==1.2.0
