@@ -7,9 +7,8 @@ gspread-dataframe
 schedule
 streamlit
 pyngrok
-google-cloud-language
+google-cloud-language==1.2.0
 matplotlib
 tld
 selenium
 keybert
-google.cloud.language_v1
