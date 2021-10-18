@@ -1361,7 +1361,7 @@ def capturaMobile(url):
       image = Image.open('abc-mobile.png')
       placeholder.image(image)
 
-#===========>FUNCIÓN 8 <===============
+#===========>FUNCIÓN 9 <===============
 #Capturas de pantalla Desktop
 def capturaDesktop(url):
   with st.expander('Captura de pantalla'):
@@ -1411,11 +1411,11 @@ def capturaDesktop(url):
       image = Image.open('abc-desktop.png')
       placeholder.image(image)
 
-#===========>FUNCIÓN 9 <===============
+#===========>FUNCIÓN 10 <===============
 #extracción de palabras/frases clave del texto
 
 def extrac_keybert(texto):
-  '''
+  
   with st.expander('Palabras/frases clave del texto'):
     with st.spinner('Generando extracción...'):
       kw_model = KeyBERT(model='paraphrase-multilingual-mpnet-base-v2')
@@ -1424,7 +1424,7 @@ def extrac_keybert(texto):
       df = pd.DataFrame(data, columns=['Keyword','Relevancia'])
       df['Relevancia'] = df['Relevancia'].apply(lambda x: format(x, '.2%'))
     st.dataframe(df.sort_values('Relevancia', ascending=False).set_index('Keyword'))
-    '''
+    
   
 
 
