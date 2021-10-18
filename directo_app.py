@@ -1247,7 +1247,7 @@ def comparativa_seo(query, df_resultados, user_agent):
         url= df_resultados.loc[i+1,'Resultados']
         key = st.secrets["key_core"]
         strategy_mobile = 'mobile'
-        url_core = 'https://www.google.com/pagespeedonline/v5/runPagespeed?url=' + url + '&=strategy' + strategy_mobile + '&key=' + key
+        url_core = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=' + url + '&=strategy' + strategy_mobile + '&key=' + key
         
         try:
           response_core = urllib.request.urlopen(url_core)
@@ -1258,31 +1258,26 @@ def comparativa_seo(query, df_resultados, user_agent):
         try:
           overall_score = round(data_core["lighthouseResult"]["categories"]["performance"]["score"] * 100)
         except:
-          overall_score = 'e'
           continue
 
         try:
           fcp = data_core["loadingExperience"]["metrics"]["FIRST_CONTENTFUL_PAINT_MS"]["percentile"] /1000
         except:
-          fcp = 'e'
           continue
         
         try:
           fid = data_core["loadingExperience"]["metrics"]["FIRST_INPUT_DELAY_MS"]["percentile"] /1000
         except:
-          fid = 'e'
           continue
 
         try:
           lcp = data_core["loadingExperience"]["metrics"]["LARGEST_CONTENTFUL_PAINT_MS"]["percentile"] /1000
         except:
-          lcp = 'e'
           continue
 
         try:
           cls = data_core["loadingExperience"]["metrics"]["CUMULATIVE_LAYOUT_SHIFT_SCORE"]["percentile"] /100
         except:
-          cls = 'e'
           continue
 
         list_overall_score.append(overall_score)
