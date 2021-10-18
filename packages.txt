@@ -1,2 +1,2 @@
-!apt-get update 
-!apt install chromium-chromedriver
+update 
+chromium-chromedriver
