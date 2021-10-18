@@ -12,3 +12,4 @@ matplotlib
 tld
 selenium
 keybert
+google.cloud.language_v1
