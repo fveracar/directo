@@ -1374,6 +1374,7 @@ def capturaDesktop(url):
       chrome_options.add_argument('--no-sandbox')
       chrome_options.add_argument('--disable-dev-shm-usage')
       chrome_options.add_argument('--disable-cookie-encryption')
+      chrome_options.add_argument('--disable-dev-shm-usage')
       wd = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
       wd.get(url)
 
