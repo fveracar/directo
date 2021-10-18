@@ -1253,7 +1253,7 @@ def comparativa_seo(query, df_resultados, user_agent):
           response_core = urllib.request.urlopen(url_core)
           data_core = json.loads(response_core.read())
         except:
-          st.write('Hubo un error en la petición')
+          st.write('Hubo un error en la petición' + url_core)
         
         try:
           overall_score = round(data_core["lighthouseResult"]["categories"]["performance"]["score"] * 100)
