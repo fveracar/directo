@@ -1259,27 +1259,31 @@ def comparativa_seo(query, df_resultados, user_agent):
           overall_score = round(data_core["lighthouseResult"]["categories"]["performance"]["score"] * 100)
         except:
           overall_score = ''
-          st.write('KeyError')
+          continue
 
         try:
           fcp = data_core["loadingExperience"]["metrics"]["FIRST_CONTENTFUL_PAINT_MS"]["percentile"] /1000
         except:
-          st.write('KeyError')
+          fcp = ''
+          continue
         
         try:
           fid = data_core["loadingExperience"]["metrics"]["FIRST_INPUT_DELAY_MS"]["percentile"] /1000
         except:
-          st.write('KeyError')
+          fid = ''
+          continue
 
         try:
           lcp = data_core["loadingExperience"]["metrics"]["LARGEST_CONTENTFUL_PAINT_MS"]["percentile"] /1000
         except:
-          st.write('KeyError')
+          lcp = ''
+          continue
 
         try:
           cls = data_core["loadingExperience"]["metrics"]["CUMULATIVE_LAYOUT_SHIFT_SCORE"]["percentile"] /100
         except:
-          st.write('KeyError')
+          cls = ''
+          continue
 
         list_overall_score.append(overall_score)
         list_fcp.append(fcp)
