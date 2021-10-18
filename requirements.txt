@@ -9,3 +9,4 @@ streamlit
 pyngrok
 google-cloud-language
 matplotlib
+tld
