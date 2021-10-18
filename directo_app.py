@@ -1345,6 +1345,7 @@ def capturaMobile(url):
       chrome_options.add_argument("--hide-scrollbars")
       chrome_options.add_argument('--disable-gpu')
       chrome_options.add_argument('--ignore-certificate-errors')
+      chrome_options.add_argument('--disable-dev-shm-usage')
 
       wd = webdriver.Chrome(chrome_options=chrome_options)
       wd.get(url)
