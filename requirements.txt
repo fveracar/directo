@@ -11,4 +11,3 @@ google-cloud-language
 matplotlib
 tld
 selenium
-PIL
