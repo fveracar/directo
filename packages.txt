@@ -1,2 +1,2 @@
-!apt-get update # to update ubuntu to correctly run apt install
-!apt install chromium-chromedriver #relacionado con las funciones de captura de pantalla
+!apt-get update 
+!apt install chromium-chromedriver
