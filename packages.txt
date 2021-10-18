@@ -1,2 +1,1 @@
-install update 
-install chromium-chromedriver
+chromium-chromedriver-dev
