@@ -700,8 +700,9 @@ def entidades (df_r, contenido_json):
         plt.title("Análisis Sentiment Magnitude")
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot(plt.show())
-
-  extrac_keybert(texto=texto)
+  
+  if keybert_active = True:
+    extrac_keybert(texto=texto)
 
 #===========>FUNCIÓN 7 <===============
 #Comparativa SEO
