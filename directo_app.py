@@ -701,7 +701,7 @@ def entidades (df_r, contenido_json):
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot(plt.show())
   
-  if keybert_active = True:
+  if keybert_active == True:
     extrac_keybert(texto=texto)
 
 #===========>FUNCIÓN 7 <===============
