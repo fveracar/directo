@@ -369,7 +369,7 @@ def entidades (df_r, contenido_json):
   elemento_ppll = '.voc-paragraph'
   elemento_mundo = '.content > p'
   elemento_pais = '.article_body > p'
-  elemento_vanguardia = '.amp-scribble-content > p'
+  elemento_vanguardia = '.article-modules > p'
   elemento_burgosnoticias = '#zonaAmpliarTexto1 > p'
   elemento_noticiasburgos = '.post > p'
   elemento_canal54 = '.fl-rich-text > p'
