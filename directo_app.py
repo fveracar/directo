@@ -1871,7 +1871,7 @@ for i in range (len(query_list)):
     user_agent_desktop = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0'
 
     elemento_html_busqueda_desktop = '//*[@class="yuRUbf"]/a/@href'
-    elemento_html_busqueda_movil= '//*[contains(@class, "C8nzq")]/@href'
+    elemento_html_busqueda_movil= '//*[contains(@class, "BmP5tf")]/@href'
     elemento_html_carrusel= '//*[contains(@class, "WlydOe")]/@href'
 
     st.header('Consulta: ' + query_list[i] + ' - ' + 'Ubicación: ' + uule [j][1])#establecemos la consulta como cabecera de los resultados visuales en streamlit
